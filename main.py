@@ -1,5 +1,6 @@
-from tkinter import *
+from tkinter import * # i need to change it
 from time import *
+#from accountClass import Account
 import os
 
 
@@ -48,6 +49,7 @@ def Login():
     except FileNotFoundError:
         print("file not found")
 
+# epmty strings check
 def Register():
     data_to_file = []
     username = usernameEntry.get()
@@ -58,19 +60,26 @@ def Register():
             for line in file:
                 data_to_file.append(line.strip("\n"))
         if(username!=data_to_file[0]):
-            with open('login_data.txt', 'w') as file:
-                file.write(username)
-                file.write("\n")
-                file.write(password)
-                statusLabel.config(text="Registration was successful. Log in",fg = 'green')
-                usernameEntry.delete(0, END)
-                passwordEntry.delete(0, END)
+            try:
+                with open('login_data.txt', 'w') as file:
+                    file.write(username)
+                    file.write("\n")
+                    file.write(password)
+                    file.write("\n")
+                    statusLabel.config(text="Registration was successful. Log in",fg = 'green')
+                    usernameEntry.delete(0, END)
+                    passwordEntry.delete(0, END)
+            except FileNotFoundError:
+                print("file not found")
         else:
                 statusLabel.config(text="Username is already in use",fg = 'red')
                 usernameEntry.delete(0, END)
                 passwordEntry.delete(0, END)
     except FileNotFoundError:
         print("file not found")
+
+
+
 
 
 loginWindow = Tk()
