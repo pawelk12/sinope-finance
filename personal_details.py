@@ -1,5 +1,6 @@
 import tkinter
 from tkinter import ttk
+from account import Account
 
 
 class PersonalDetails(ttk.Frame):
@@ -69,8 +70,10 @@ class PersonalDetails(ttk.Frame):
                     
 
                     self.detailStatusLabel.config(text="Personal details filled successfuly.",fg = 'green')
-                    # destroy
+
+                account = Account()
+                self.master.createMainPanel(account)
+                self.destroy()
                     
             except FileNotFoundError:
                     print("file not found")
-        pass

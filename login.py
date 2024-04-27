@@ -1,5 +1,6 @@
 import tkinter
 from tkinter import ttk
+from account import Account
 
 class LoginWidgets(ttk.Frame):
     def __init__(self,master):
@@ -41,8 +42,8 @@ class LoginWidgets(ttk.Frame):
                     self.destroy()
                     # check if personal details are written to file
                     if(len(data_from_file)>=3):
-                        #just for test
-                        print("Welcome")
+                        account = Account()
+                        self.master.createMainPanel(account)
                     else:
                         self.master.runPersonalDetails()
                 else:
