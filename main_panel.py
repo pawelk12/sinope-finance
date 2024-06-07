@@ -38,7 +38,7 @@ class MainWidgets(ctk.CTkFrame):
         #self.dateFrame.place(x=0,y=0)
         self.mainFrame.pack(side=ctk.RIGHT)
         self.pack(expand = True)
-        self.update()
+        #self.update()
 
     def update(self):
         time_str = time.strftime("%H:%M:%S   %d-%m-%Y")
