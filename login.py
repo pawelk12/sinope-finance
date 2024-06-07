@@ -41,8 +41,11 @@ class LoginWidgets(ctk.CTkFrame):
             account = Account(*data_list)
             print("Logged in successfully")
             ################
+            # LATER
             # update the last login time
-            # self.master.createMainPanel(acc)
+            
+            self.pack_forget()
+            self.master.createMainPanel(account)
 
             # else
-            # update status label 
+            # update status label login failed
