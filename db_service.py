@@ -52,3 +52,44 @@ def GetData(account_id):
     mycursor.execute(sqlGetData, (account_id,))
     data = mycursor.fetchall()
     return data
+
+
+
+#########
+# + condition if user did not enter his own account numer
+def TransferMoney(sender_id, receiver_accnum, amount):
+
+    # if receiver exist
+    sqlIfAccountNumExists = "SELECT ID FROM ACCOUNTS WHERE ACCOUNT_NUM = %s"
+    mycursor.execute(sqlIfAccountNumExists, (receiver_accnum,))
+    receiver_id = mycursor.fetchone()
+
+    sqlCheckSenderBalance = "SELECT BALANCE FROM ACCOUNTS WHERE ID = %s"
+    mycursor.execute(sqlCheckSenderBalance, (sender_id,))
+    sender_balance = mycursor.fetchone()[0]
+
+    if(float(amount)<= 0.00):
+        status = "Incorrect transfer amount value was provided."
+        return status
+
+    if(sender_balance < float(amount) and receiver_id != None):
+        status = "You do not have enough funds in your account."
+        return status
+    elif(sender_balance > float(amount) and receiver_id != None):
+
+        # transferring money
+        mycursor.execute(("UPDATE ACCOUNTS\
+                        SET BALANCE = BALANCE - %s\
+                        WHERE ID = %s"), (float(amount), sender_id,))
+        
+        mycursor.execute(("UPDATE ACCOUNTS\
+                        SET BALANCE = BALANCE + %s\
+                        WHERE ACCOUNT_NUM = %s"), (float(amount), receiver_accnum,))
+        
+        db.commit()
+        status = "The transfer was successful."
+        return status
+    else:
+        status = "Invalid bank number."
+        return status
+

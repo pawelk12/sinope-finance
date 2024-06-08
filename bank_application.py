@@ -28,5 +28,5 @@ class BankApp(ctk.CTk):
     def createRegisterPanel(self):
         registerFrame = RegisterWidgets(self)
 
-    def createMainPanel(self, account):
-        mainPanel = MainWidgets(self, account)
+    def createMainPanel(self, account_id):
+        mainPanel = MainWidgets(self, account_id)

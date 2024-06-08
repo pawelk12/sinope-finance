@@ -32,20 +32,16 @@ class LoginWidgets(ctk.CTkFrame):
 
 
     def Login(self):
-        if(ReadFromDB(self.usernameEntry.get(), hashlib.sha256(self.passwordEntry.get().encode()).hexdigest())):
-            data = GetData(ReadFromDB(self.usernameEntry.get(), hashlib.sha256(self.passwordEntry.get().encode()).hexdigest()))
+        
+        account_id = ReadFromDB(self.usernameEntry.get(), hashlib.sha256(self.passwordEntry.get().encode()).hexdigest())
+        if(account_id):
+            print("Logged successfully")
+            self.pack_forget()
+            self.master.createMainPanel(ReadFromDB(self.usernameEntry.get(), hashlib.sha256(self.passwordEntry.get().encode()).hexdigest()))
 
-            # in order to remove password
-            data_list = list(data[0])
-            data_list.pop(2)
-            account = Account(*data_list)
-            print("Logged in successfully")
             ################
             # LATER
-            # update the last login time
-            
-            self.pack_forget()
-            self.master.createMainPanel(account)
+            # update the last login time/ last activity
 
             # else
             # update status label login failed

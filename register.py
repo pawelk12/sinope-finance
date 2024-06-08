@@ -55,6 +55,8 @@ class RegisterWidgets(ctk.CTkFrame):
     def Register(self):
         ##############
         # check if data is correct (correct format especially)
+        # and check if account number is not taken by other user
+        
         if not IfLoginExists(self.usernameEntry.get()): #login is available
             #write atributes to database
             #INSERT INTO ACCOUNTS (LOGIN, PASSWD, FIRST_NAME, LAST_NAME, EMAIL, DATE_OF_BIRTH, ACCOUNT_NUM)
