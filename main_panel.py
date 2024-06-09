@@ -2,8 +2,9 @@ import time
 import customtkinter as ctk
 from account import Account
 from fund_transfer import TransferWidgets
+from transfer_history import TransferHistoryWidgets
 from db_service import GetData
-
+from db_service import GetTransferHistory
 class MainWidgets(ctk.CTkFrame):
     def __init__(self,master, account_id):
         super().__init__(master)
@@ -24,12 +25,11 @@ class MainWidgets(ctk.CTkFrame):
         #self.balanceLabel.pack(side=ctk.LEFT)
         self.balanceLabel.grid(row=1,column=0)
 
-        self.testLabel = ctk.CTkLabel(self.mainFrame, text="123")
-        #self.testLabel.pack(side=ctk.RIGHT)
-        self.testLabel.grid(row=2,column=0)
+        transferButton = ctk.CTkButton(self.mainFrame, text="Transfer of funds",command=self.fundTransfer)
+        transferButton.grid(row=2,column=0)
 
-        transfferButton = ctk.CTkButton(self.mainFrame, text="Fund Transfer",command=self.fundTransfer)
-        transfferButton.grid(row=3,column=0)
+        historyButton = ctk.CTkButton(self.mainFrame, text="Transfer history",command=self.transferHistory)
+        historyButton.grid(row=3,column=0)
 
         #self.timeLabel = tkinter.Label(self.mainFrame,font=('Arial',20),fg="black",bg="#F9F7E6")
         #self.timeLabel.grid(row=1,column=0)
@@ -68,3 +68,8 @@ class MainWidgets(ctk.CTkFrame):
     def fundTransfer(self):
         self.pack_forget()
         transferFrame = TransferWidgets(self.master, self)
+
+    def transferHistory(self):
+        self.pack_forget()
+        history = GetTransferHistory(self.account.bankAccNum) #list of tuples
+        transferHistoryFrame = TransferHistoryWidgets(self.master, self, history)

@@ -87,9 +87,28 @@ def TransferMoney(sender_id, receiver_accnum, amount):
                         WHERE ACCOUNT_NUM = %s"), (float(amount), receiver_accnum,))
         
         db.commit()
+        
+
+        # adding transfer to transfer history table
+        mycursor.execute(("SELECT ACCOUNT_NUM FROM ACCOUNTS\
+                          WHERE ID = %s"), (sender_id,))
+        sender_accnum = mycursor.fetchone()[0]
+
+        mycursor.execute(("INSERT INTO FUND_TRANSFERS (SENDER_NUM, RECEIVER_NUM, AMOUNT)\
+                          VALUES (%s, %s, %s )"), (sender_accnum, receiver_accnum, float(amount)))
+        db.commit()
+
         status = "The transfer was successful."
         return status
     else:
         status = "Invalid bank number."
         return status
 
+
+def GetTransferHistory(accNumber):
+    mycursor.execute(("SELECT * FROM FUND_TRANSFERS\
+                      WHERE SENDER_NUM = %s OR RECEIVER_NUM = %s\
+                      GROUP BY DATE_OF_TRANSFER DESC"),(accNumber, accNumber,))
+    history = mycursor.fetchall()
+    print(history)
+    return history
