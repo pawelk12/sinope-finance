@@ -42,7 +42,6 @@ def Login(login, hashed_passwd):
     if account_id:
         return account_id[0]
     else:
-        print("Failed to login")
         return None
 
 
@@ -110,5 +109,11 @@ def GetTransferHistory(accNumber):
                       WHERE SENDER_NUM = %s OR RECEIVER_NUM = %s\
                       GROUP BY DATE_OF_TRANSFER DESC"),(accNumber, accNumber,))
     history = mycursor.fetchall()
-    print(history)
     return history
+
+def EditPersonalInfo(account_id, new_login, new_email):
+    mycursor.execute(("UPDATE ACCOUNTS\
+                      SET LOGIN = %s,\
+                      EMAIL = %s\
+                      WHERE ID = %s"), (new_login, new_email, account_id))
+    db.commit()

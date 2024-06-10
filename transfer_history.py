@@ -1,5 +1,4 @@
 import customtkinter as ctk
-from db_service import GetTransferHistory
 
 class TransferHistoryWidgets(ctk.CTkScrollableFrame):
     def __init__(self, master, mainframe, history):
@@ -24,7 +23,7 @@ class TransferHistoryWidgets(ctk.CTkScrollableFrame):
                 recordLabel.configure(text_color = "#1a8e05")
             recordLabel.grid(row=2+i,column=0,sticky="w")
             i = i + 1
-            
+
 
         self.pack(expand = True)
 

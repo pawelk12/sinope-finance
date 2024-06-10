@@ -39,7 +39,7 @@ class RegisterWidgets(ctk.CTkFrame):
         self.emailEntry = ctk.CTkEntry(self)
         self.emailEntry.grid(row=5,column=1)
 
-        dateOfBirthLabel = ctk.CTkLabel(self, text="Date of birthday(yyyy-mm-dd):")
+        dateOfBirthLabel = ctk.CTkLabel(self, text="Date of Birth(yyyy-mm-dd):")
         dateOfBirthLabel.grid(row=6,column=0)
         self.dateOfBirthEntry = ctk.CTkEntry(self)
         self.dateOfBirthEntry.grid(row=6,column=1)
