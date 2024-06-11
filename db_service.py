@@ -68,11 +68,11 @@ def TransferMoney(sender_id, receiver_accnum, amount):
     sender_balance = mycursor.fetchone()[0]
 
     if(float(amount)<= 0.00):
-        status = "Incorrect transfer amount value was provided."
+        status = "Incorrect transfer amount value was provided"
         return status
 
     if(sender_balance < float(amount) and receiver_id != None):
-        status = "You do not have enough funds in your account."
+        status = "You do not have enough funds in your account"
         return status
     elif(sender_balance > float(amount) and receiver_id != None):
 
@@ -97,10 +97,10 @@ def TransferMoney(sender_id, receiver_accnum, amount):
                           VALUES (%s, %s, %s )"), (sender_accnum, receiver_accnum, float(amount)))
         db.commit()
 
-        status = "The transfer was successful."
+        status = "The transfer was successful"
         return status
     else:
-        status = "Invalid bank number."
+        status = "Invalid bank number"
         return status
 
 

@@ -7,7 +7,7 @@ class TransferHistoryWidgets(ctk.CTkScrollableFrame):
         self.parent = mainframe
 
         goBackButton = ctk.CTkButton(self, text="<-Back to Home",command=self.goBack)
-        goBackButton.grid(row=0,column=0)
+        goBackButton.grid(row=0,column=0,sticky="w")
 
         titleLabel = ctk.CTkLabel(self, text="Transfer history",font=("Arial",20))
         titleLabel.grid(row=1,column=0,columnspan=2,padx=20)

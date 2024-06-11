@@ -21,11 +21,12 @@ class LoginWidgets(ctk.CTkFrame):
         self.passwordEntry = ctk.CTkEntry(self, show="*")
         self.passwordEntry.grid(row=2,column=3)
 
-        loginButton = ctk.CTkButton(self, text="Login",command=self.Login)
-        loginButton.grid(row=3,column=2,columnspan=2)
-
         self.statusLabel = ctk.CTkLabel(self, text="")
-        self.statusLabel.grid(row=5,column=2,columnspan=2,padx=20)
+        self.statusLabel.grid(row=3,column=2,columnspan=2,padx=20)
+
+        loginButton = ctk.CTkButton(self, text="Login",command=self.Login)
+        loginButton.grid(row=4,column=2,columnspan=2)
+
 
         self.pack(expand = True)
 
@@ -35,7 +36,7 @@ class LoginWidgets(ctk.CTkFrame):
         
         account_id = ReadFromDB(self.usernameEntry.get(), hashlib.sha256(self.passwordEntry.get().encode()).hexdigest())
         if(account_id):
-            print("Logged successfully")
+            self.statusLabel.configure(text="Logged successfully",text_color="#009900")
             self.pack_forget()
             self.master.createMainPanel(ReadFromDB(self.usernameEntry.get(), hashlib.sha256(self.passwordEntry.get().encode()).hexdigest()))
 
@@ -43,5 +44,5 @@ class LoginWidgets(ctk.CTkFrame):
             # LATER
             # update the last login time/ last activity
 
-            # else
-            # update status label login failed
+        else:
+            self.statusLabel.configure(text="Failed to log in",text_color="#ff6633")
