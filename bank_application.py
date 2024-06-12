@@ -1,9 +1,9 @@
-import time
 import customtkinter as ctk
 from login import LoginWidgets
 from register import RegisterWidgets
 from welcome import WelcomeWidgets
 from main_panel import MainWidgets
+
 
 
 class BankApp(ctk.CTk):
@@ -15,9 +15,9 @@ class BankApp(ctk.CTk):
         self.minsize(600,400)
         self.maxsize(1200,800)
         
-        #welcomeFrame = WelcomeWidgets(self)
         self.createWelcomWingets()
         self.mainloop()
+
 
     def createWelcomWingets(self):
         welcomeFrame = WelcomeWidgets(self)
@@ -30,3 +30,4 @@ class BankApp(ctk.CTk):
 
     def createMainPanel(self, account_id):
         mainPanel = MainWidgets(self, account_id)
+

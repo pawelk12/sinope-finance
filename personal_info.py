@@ -66,9 +66,10 @@ class PersonalInfoWidgets(ctk.CTkFrame):
         self.pack(expand = True)
 
     def SaveChanges(self):
-        # if password is correct and new login is available
         hashed_passwd = hashlib.sha256(self.passwordEntry.get().encode()).hexdigest()
-        if (Login(self.parent.account.username,hashed_passwd)!= None and not IfLoginExists(self.usernameEntry.get())):
+        if(Login(self.parent.account.username,hashed_passwd)== None):
+            self.statusLabel.configure(text="You have entered an incorrect password",text_color="#ff6633")
+        elif(Login(self.parent.account.username,hashed_passwd)!= None and not IfLoginExists(self.usernameEntry.get())):
             EditPersonalInfo(self.parent.account.id, self.usernameEntry.get(), self.emailEntry.get())
             # update account object
             data = GetData(self.parent.account.id)
@@ -76,12 +77,8 @@ class PersonalInfoWidgets(ctk.CTkFrame):
             data_list.pop(2)
             self.parent.account.update(*data_list)
             self.statusLabel.configure(text="Changes have been saved",text_color="#009900")
-
-
-        elif(IfLoginExists(self.usernameEntry.get())):
-            self.statusLabel.configure(text="The login you entered is taken",text_color="#ff6633")
         else:
-            self.statusLabel.configure(text="You entered wrong password",text_color="#ff6633")
+            self.statusLabel.configure(text="The login you entered is already taken",text_color="#ff6633")
 
     def goBack(self):
         self.pack_forget()
