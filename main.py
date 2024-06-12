@@ -1,7 +1,11 @@
 from bank_application import BankApp
+from db_service import disconnect
+
 def main():
-    
-    app = BankApp("MyBankApp", "1200x800")
+    try:
+        app = BankApp("MyBankApp", "1200x800")
+    finally:
+        disconnect()
 
 
 if __name__ == "__main__":
