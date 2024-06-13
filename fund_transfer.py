@@ -57,6 +57,8 @@ class TransferWidgets(ctk.CTkFrame):
             elif(result == invalidNumber):
                 self.statusLabel.configure(text=invalidNumber, text_color="#ff6633")
             elif(result == transferSuccess):
+                self.accountNumberEntry.delete(0, ctk.END)
+                self.amountEntry.delete(0, ctk.END)
                 self.statusLabel.configure(text=transferSuccess, text_color="#009900")
 
                 # update account object created in MainWidgets 
