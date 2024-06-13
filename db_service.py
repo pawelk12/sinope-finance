@@ -21,7 +21,7 @@ try:
         DATE_OF_BIRTH DATE NOT NULL,\
         BALANCE FLOAT NOT NULL DEFAULT 0.00,\
         START_BONUS BOOLEAN NOT NULL DEFAULT FALSE,\
-        LAST_LOGIN DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,\
+        JOIN_DATE DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,\
         ACCOUNT_NUM BIGINT NOT NULL,\
         UNIQUE(ACCOUNT_NUM));")
 
@@ -54,16 +54,18 @@ def Register(values):
     db.commit()
     mycursor.close()
 
-'''
-def GetSecrets():
+def IfAccNumExists(accNum):
     mycursor = db.cursor()
-    mycursor.execute("SELECT LOGIN, PASSWD FROM ACCOUNTS;")
-    secrets = mycursor.fetchall()   #tuples('login', 'passwd')
-    for secret in secrets:
-        print(secret)
-    mycursor.close()
+    sqlIfAccNumExists = "SELECT 1 FROM ACCOUNTS WHERE ACCOUNT_NUM = %s"
+    mycursor.execute(sqlIfAccNumExists, (accNum,))
+    if mycursor.fetchone():
+        mycursor.close()
+        return True  #account number exists
+    else:
+        mycursor.close()
+        return False #account number does not exist
 
-'''
+
 def IfLoginExists(login):
     mycursor = db.cursor()
     sqlIfLoginExists = "SELECT 1 FROM ACCOUNTS WHERE LOGIN = %s"
