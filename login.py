@@ -27,7 +27,9 @@ class LoginWidgets(ctk.CTkFrame):
         loginButton = ctk.CTkButton(self, text="Login",command=self.Login)
         loginButton.grid(row=4,column=2,columnspan=2)
 
-
+        SwitchToRegisterButton = ctk.CTkButton(self, text="Don't you have an account? Click here to register",
+                                        fg_color ="transparent",hover=False,command=self.SwitchToRegister)
+        SwitchToRegisterButton.grid(row=5,column=2,columnspan=2)
         self.pack(expand = True)
 
 
@@ -46,3 +48,7 @@ class LoginWidgets(ctk.CTkFrame):
 
         else:
             self.statusLabel.configure(text="Failed to log in",text_color="#ff6633")
+
+    def SwitchToRegister(self):
+        self.pack_forget()
+        self.master.createRegisterPanel()
