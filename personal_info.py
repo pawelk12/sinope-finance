@@ -11,7 +11,7 @@ class PersonalInfoWidgets(ctk.CTkFrame):
         
         self.parent = mainframe
 
-        goBackButton = ctk.CTkButton(self, text="<-Back to Home",command=self.goBack)
+        goBackButton = ctk.CTkButton(self, text="<-Back",command=self.goBack)
         goBackButton.grid(row=0,column=0,sticky="w")
 
         titleLabel = ctk.CTkLabel(self,text="Edit your personal details")
@@ -82,4 +82,4 @@ class PersonalInfoWidgets(ctk.CTkFrame):
 
     def goBack(self):
         self.pack_forget()
-        self.parent.master.createMainPanel(self.parent.account.id)
+        self.parent.parent.accountWidgets()

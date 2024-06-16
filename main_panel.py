@@ -4,8 +4,8 @@ from account import Account
 from fund_transfer import TransferWidgets
 from transfer_history import TransferHistoryWidgets
 from personal_info import PersonalInfoWidgets
-from db_service import GetData
-from db_service import GetTransferHistory
+from db_service import GetData, GetTransferHistory
+from account_widgets import AccountWidgets
 class MainWidgets(ctk.CTkFrame):
     def __init__(self,master, account_id):
         super().__init__(master)
@@ -32,8 +32,11 @@ class MainWidgets(ctk.CTkFrame):
         historyButton = ctk.CTkButton(self.mainFrame, text="Transfer history",command=self.transferHistory)
         historyButton.grid(row=3,column=0)
 
-        editInfoButton = ctk.CTkButton(self.mainFrame, text="Edit personal information",command=self.editInfo)
-        editInfoButton.grid(row=4,column=0)
+        #editInfoButton = ctk.CTkButton(self.mainFrame, text="Edit personal information",command=self.editInfo)
+        #editInfoButton.grid(row=4,column=0)
+
+        accountButton = ctk.CTkButton(self.mainFrame, text="My account",command=self.accountWidgets)
+        accountButton.grid(row=4,column=0)
 
         #self.timeLabel = tkinter.Label(self.mainFrame,font=('Arial',20),fg="black",bg="#F9F7E6")
         #self.timeLabel.grid(row=1,column=0)
@@ -78,6 +81,10 @@ class MainWidgets(ctk.CTkFrame):
         history = GetTransferHistory(self.account.bankAccNum) #list of tuples
         transferHistoryFrame = TransferHistoryWidgets(self.master, self, history)
 
-    def editInfo(self):
+    #def editInfo(self):
+    #    self.pack_forget()
+    #    editInfoFrame = PersonalInfoWidgets(self.master, self)
+
+    def accountWidgets(self):
         self.pack_forget()
-        editInfoFrame = PersonalInfoWidgets(self.master, self)
+        accountFrame = AccountWidgets(self.master, self)
