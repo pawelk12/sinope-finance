@@ -34,6 +34,12 @@ try:
         FOREIGN KEY (SENDER_NUM) REFERENCES ACCOUNTS(ACCOUNT_NUM),\
         FOREIGN KEY (RECEIVER_NUM) REFERENCES ACCOUNTS(ACCOUNT_NUM));")
     
+    mycursor.execute("CREATE TABLE IF NOT EXISTS LOGIN_RECORDS (\
+        LOG_ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,\
+        USER_ID INT NOT NULL,\
+        DATE_OF_LOGIN DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,\
+        FOREIGN KEY (USER_ID) REFERENCES ACCOUNTS(ID));")
+
     mycursor.close()
     
 except mysql.connector.Error:
@@ -171,3 +177,20 @@ def EditPersonalInfo(account_id, new_login, new_email):
                       WHERE ID = %s"), (new_login, new_email, account_id))
     db.commit()
     mycursor.close()
+
+def addLoginRecord(account_id):
+    mycursor = db.cursor()
+    mycursor.execute("INSERT INTO LOGIN_RECORDS (USER_ID)\
+                     VALUES (%s)",(account_id,))
+    db.commit()
+    mycursor.close()
+
+def getLoginRecords(account_id):
+    mycursor = db.cursor()
+    mycursor.execute("SELECT DATE_OF_LOGIN\
+                     FROM LOGIN_RECORDS\
+                     WHERE USER_ID = %s\
+                     ORDER BY DATE_OF_LOGIN DESC;", (account_id,))
+    history = mycursor.fetchall()
+    mycursor.close()
+    return history
