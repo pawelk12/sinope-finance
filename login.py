@@ -2,8 +2,6 @@ import customtkinter as ctk
 from db_service import Login as ReadFromDB, addLoginRecord
 import hashlib
 
-
-
 class LoginWidgets(ctk.CTkFrame):
     def __init__(self,master):
         super().__init__(master)
@@ -41,10 +39,6 @@ class LoginWidgets(ctk.CTkFrame):
             addLoginRecord(account_id)
             self.pack_forget()
             self.master.createMainPanel(ReadFromDB(self.usernameEntry.get(), hashlib.sha256(self.passwordEntry.get().encode()).hexdigest()))
-
-            ################
-            # LATER
-            # update the last login time/ last activity
 
         else:
             self.statusLabel.configure(text="Failed to log in",text_color="#ff6633")
