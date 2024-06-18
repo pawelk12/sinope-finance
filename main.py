@@ -3,7 +3,7 @@ from db_service import disconnect
 
 def main():
     try:
-        app = BankApp("JovianFinanceBank", "1200x800", "resources/icon.png")
+        app = BankApp("SinopeFinance", "1200x800", "resources/icon.png")
     finally:
         disconnect()
 

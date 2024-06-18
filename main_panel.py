@@ -15,7 +15,7 @@ class MainWidgets(ctk.CTkFrame):
         data_list = list(data[0])
         data_list.pop(2)
         self.account = Account(*data_list)
-
+        self.master.geometry("1200x800")
         self.mainFrame = ctk.CTkFrame(self, fg_color="transparent")
         self.balanceLabel = ctk.CTkLabel(self.mainFrame, text="{:.2f}".format(self.account.balance) ,font=("Arial",80),
                                          fg_color="transparent")

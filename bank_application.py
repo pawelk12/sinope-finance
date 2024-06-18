@@ -13,7 +13,7 @@ class BankApp(tk.Tk):
         super().__init__()
         self.title(title)
         self.geometry(geometry)
-        self.minsize(600,400)
+        self.minsize(300,400)
         self.maxsize(1200,800)
         self.path_to_icon = path_to_icon
         self.setIcon()
