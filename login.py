@@ -38,7 +38,13 @@ class LoginWidgets(ctk.CTkFrame):
             self.statusLabel.configure(text="Logged successfully",text_color="#009900")
             addLoginRecord(account_id)
             self.pack_forget()
+
+            # configuring window
             self.master.createMainPanel(ReadFromDB(self.usernameEntry.get(), hashlib.sha256(self.passwordEntry.get().encode()).hexdigest()))
+            self.master.resizeAndCenter(1200,800)
+            self.master.resizable(True, True)
+            self.master.minsize(600,400)
+            self.master.maxsize(1600,1080)
 
         else:
             self.statusLabel.configure(text="Failed to log in",text_color="#ff6633")

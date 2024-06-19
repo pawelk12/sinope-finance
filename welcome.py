@@ -5,7 +5,7 @@ class WelcomeWidgets(ctk.CTkFrame):
     def __init__(self,master):
         super().__init__(master)
 
-        self.master.geometry("476x573")
+        self.master.resizeAndCenter(476,573)
         self.configure(fg_color="#021639")
         pathToJupiter = "resources/welcome/picture.png"
         jupiterImage = PhotoImage(file=pathToJupiter)

@@ -13,8 +13,7 @@ class BankApp(tk.Tk):
         super().__init__()
         self.title(title)
         self.geometry(geometry)
-        self.minsize(300,400)
-        self.maxsize(1200,800)
+        self.resizable(False, False)
         self.path_to_icon = path_to_icon
         self.setIcon()
         self.configure(bg="#2b2b2b")
@@ -37,4 +36,13 @@ class BankApp(tk.Tk):
     def setIcon(self):
         icon = PhotoImage(file=self.path_to_icon)
         self.iconphoto(True, icon)
+
+    def resizeAndCenter(self, windowWidth, windowHeight):
+        screenWidth = self.winfo_screenwidth()
+        screenHeight = self.winfo_screenheight()
+
+        centeredX = int(screenWidth/2 - windowWidth/2)
+        centeredY = int(screenHeight/2 - windowHeight/2)
+
+        self.geometry(f"{windowWidth}x{windowHeight}+{centeredX}+{centeredY}")
 

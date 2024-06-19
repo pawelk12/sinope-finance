@@ -15,7 +15,6 @@ class MainWidgets(ctk.CTkFrame):
         data_list = list(data[0])
         data_list.pop(2)
         self.account = Account(*data_list)
-        self.master.geometry("1200x800")
         self.mainFrame = ctk.CTkFrame(self, fg_color="transparent")
         self.balanceLabel = ctk.CTkLabel(self.mainFrame, text="{:.2f}".format(self.account.balance) ,font=("Arial",80),
                                          fg_color="transparent")
@@ -29,7 +28,8 @@ class MainWidgets(ctk.CTkFrame):
         #self.timeLabel.grid(row=1,column=0)
 
         ############### Bar frame for pages
-        self.barFrame = ctk.CTkFrame(self,width=200,height=700)
+
+        self.barFrame = ctk.CTkFrame(self)
 
         transferButton = ctk.CTkButton(self.barFrame, text="Transfer of funds",command=self.fundTransfer)
         transferButton.grid(row=0,column=0)
