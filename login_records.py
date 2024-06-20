@@ -24,4 +24,4 @@ class LoginRecords(ctk.CTkScrollableFrame):
 
     def goBack(self):
         self.pack_forget()
-        self.parent.parent.accountWidgets()
+        self.parent.accountWidgets()

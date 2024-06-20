@@ -6,6 +6,7 @@ from transfer_history import TransferHistoryWidgets
 from personal_info import PersonalInfoWidgets
 from db_service import GetData, GetTransferHistory
 from account_widgets import AccountWidgets
+
 class MainWidgets(ctk.CTkFrame):
     def __init__(self,master, account_id):
         super().__init__(master)
@@ -32,16 +33,19 @@ class MainWidgets(ctk.CTkFrame):
         self.barFrame = ctk.CTkFrame(self)
 
         transferButton = ctk.CTkButton(self.barFrame, text="Transfer of funds",command=self.fundTransfer)
-        transferButton.grid(row=0,column=0)
+        transferButton.pack()
 
         historyButton = ctk.CTkButton(self.barFrame, text="Transfer history",command=self.transferHistory)
-        historyButton.grid(row=1,column=0)
+        historyButton.pack()
 
         accountButton = ctk.CTkButton(self.barFrame, text="My account",command=self.accountWidgets)
-        accountButton.grid(row=2,column=0)
+        accountButton.pack()
+
+        logoutButton = ctk.CTkButton(self.barFrame, text="Log out",command=self.logOut)
+        logoutButton.pack(anchor="s",expand = True)
 
         ############### Packing frames and stuff
-        self.barFrame.pack(side=ctk.LEFT, fill=ctk.Y)
+        self.barFrame.pack(side=ctk.LEFT,fill=ctk.Y)
         self.mainFrame.pack(side=ctk.LEFT, expand=True, fill=ctk.X) #fill=ctk.BOTH, 
         self.pack(fill=ctk.BOTH, expand=True)
 
@@ -62,3 +66,8 @@ class MainWidgets(ctk.CTkFrame):
     def accountWidgets(self):
         self.pack_forget()
         accountFrame = AccountWidgets(self.master, self)
+
+    def logOut(self):
+        del self.account
+        self.pack_forget()
+        self.master.createWelcomWingets()

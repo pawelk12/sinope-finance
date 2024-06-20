@@ -13,7 +13,6 @@ class BankApp(tk.Tk):
         super().__init__()
         self.title(title)
         self.geometry(geometry)
-        self.resizable(False, False)
         self.path_to_icon = path_to_icon
         self.setIcon()
         self.configure(bg="#2b2b2b")

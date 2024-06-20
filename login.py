@@ -67,7 +67,6 @@ class LoginWidgets(ctk.CTkFrame):
             self.master.resizeAndCenter(1200,800)
             self.master.resizable(True, True)
             self.master.minsize(600,400)
-            self.master.maxsize(1600,1080)
 
         else:
             self.statusLabel.configure(text="Failed to log in",text_color="#ff6633")

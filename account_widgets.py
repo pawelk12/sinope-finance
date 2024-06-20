@@ -8,7 +8,6 @@ class AccountWidgets(ctk.CTkFrame):
         super().__init__(master)
 
         self.parent = mainframe
-        self.account = self.parent.account
 
         goBackButton = ctk.CTkButton(self, text="<-Back to Home",command=self.goBack)
         goBackButton.grid(row=0,column=0,sticky="w")
@@ -27,10 +26,10 @@ class AccountWidgets(ctk.CTkFrame):
         self.parent.master.createMainPanel(self.parent.account.id)
 
     def showLoginRecords(self):
-        login_history = getLoginRecords(self.account.id)
+        login_history = getLoginRecords(self.parent.account.id)
         self.pack_forget()
-        LoginRecordsFrame = LoginRecords(self.master, self, login_history)
+        LoginRecordsFrame = LoginRecords(self.master, self.parent, login_history)
 
     def editInfo(self):
         self.pack_forget()
-        editInfoFrame = PersonalInfoWidgets(self.master, self)
+        editInfoFrame = PersonalInfoWidgets(self.master, self.parent)
