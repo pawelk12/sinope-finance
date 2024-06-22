@@ -1,6 +1,4 @@
 import customtkinter as ctk
-from db_service import Login
-
 
 class LoginRecords(ctk.CTkScrollableFrame):
     def __init__(self,master, mainframe, login_history):

@@ -18,16 +18,16 @@ class PersonalInfoWidgets(ctk.CTkFrame):
         titleLabel.grid(row=1,column=0,columnspan=2,padx=20)
 
 
-        firstnameLabel = ctk.CTkLabel(self, text="Frist Name: " + self.parent.account.firstName)
+        firstnameLabel = ctk.CTkLabel(self, text="Frist Name: " + self.parent.account.FirstName)
         firstnameLabel.grid(row=2,column=0,sticky = "w")
 
-        lastnameLabel = ctk.CTkLabel(self, text="Last name: " + self.parent.account.lastName)
+        lastnameLabel = ctk.CTkLabel(self, text="Last name: " + self.parent.account.LastName)
         lastnameLabel.grid(row=3,column=0,sticky = "w")
 
-        dateOfBirthLabel = ctk.CTkLabel(self, text="Date of Birth: " + str(self.parent.account.birthDate))
+        dateOfBirthLabel = ctk.CTkLabel(self, text="Date of Birth: " + str(self.parent.account.BirthDate))
         dateOfBirthLabel.grid(row=4,column=0,sticky = "w")
 
-        bankAccNumLabel = ctk.CTkLabel(self, text="Acct. No.: " + str(self.parent.account.bankAccNum))
+        bankAccNumLabel = ctk.CTkLabel(self, text="Acct. No.: " + str(self.parent.account.BankAccNum))
         bankAccNumLabel.grid(row=5,column=0,sticky = "w")
 
         # entry boxes
@@ -37,7 +37,7 @@ class PersonalInfoWidgets(ctk.CTkFrame):
 
         loginStartValue = ctk.StringVar()
         self.usernameEntry = ctk.CTkEntry(self, textvariable=loginStartValue)
-        loginStartValue.set(self.parent.account.username)
+        loginStartValue.set(self.parent.account.Username)
         self.usernameEntry.grid(row=6,column=1)
 
 
@@ -46,7 +46,7 @@ class PersonalInfoWidgets(ctk.CTkFrame):
 
         emailStartValue = ctk.StringVar()
         self.emailEntry = ctk.CTkEntry(self, textvariable=emailStartValue)
-        emailStartValue.set(self.parent.account.email)
+        emailStartValue.set(self.parent.account.Email)
         self.emailEntry.grid(row=7,column=1)
 
         confirmLabel = ctk.CTkLabel(self,text="Confirm changes with your password ")
@@ -67,8 +67,8 @@ class PersonalInfoWidgets(ctk.CTkFrame):
 
     def SaveChanges(self):
         hashed_passwd = hashlib.sha256(self.passwordEntry.get().encode()).hexdigest()
-        username = self.parent.account.username
-        email = self.parent.account.email
+        username = self.parent.account.Username
+        email = self.parent.account.Email
 
         if(Login(username,hashed_passwd)== None):
             self.statusLabel.configure(text="Incorrect password",text_color="#ff6633")
@@ -83,7 +83,7 @@ class PersonalInfoWidgets(ctk.CTkFrame):
         if(Login(username,hashed_passwd)!= None and #user changes email
            self.usernameEntry.get() == username and self.emailEntry.get()!=email):
             
-            EditPersonalInfo(self.parent.account.id, self.usernameEntry.get(), self.emailEntry.get())
+            EditPersonalInfo(self.parent.account.Id, self.usernameEntry.get(), self.emailEntry.get())
             self.updateAccount()
             self.statusLabel.configure(text="Changes have been saved",text_color="#009900")
             self.passwordEntry.delete(0, ctk.END)
@@ -92,7 +92,7 @@ class PersonalInfoWidgets(ctk.CTkFrame):
              not IfLoginExists(self.usernameEntry.get()) and
              self.usernameEntry.get()!=username and self.emailEntry.get()==email):
             
-            EditPersonalInfo(self.parent.account.id, self.usernameEntry.get(), self.emailEntry.get())
+            EditPersonalInfo(self.parent.account.Id, self.usernameEntry.get(), self.emailEntry.get())
             self.updateAccount()
             self.statusLabel.configure(text="Changes have been saved",text_color="#009900")
             self.passwordEntry.delete(0, ctk.END)
@@ -101,7 +101,7 @@ class PersonalInfoWidgets(ctk.CTkFrame):
              not IfLoginExists(self.usernameEntry.get()) and
              self.usernameEntry.get()!=username and self.emailEntry.get()!=email):
 
-            EditPersonalInfo(self.parent.account.id, self.usernameEntry.get(), self.emailEntry.get())
+            EditPersonalInfo(self.parent.account.Id, self.usernameEntry.get(), self.emailEntry.get())
             self.updateAccount()
             self.statusLabel.configure(text="Changes have been saved",text_color="#009900")
             self.passwordEntry.delete(0, ctk.END)
@@ -118,7 +118,7 @@ class PersonalInfoWidgets(ctk.CTkFrame):
         self.parent.accountWidgets()
 
     def updateAccount(self):
-        data = GetData(self.parent.account.id)
+        data = GetData(self.parent.account.Id)
         data_list = list(data[0])
         data_list.pop(2)
         self.parent.account.update(*data_list)

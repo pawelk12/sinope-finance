@@ -14,7 +14,7 @@ class TransferHistoryWidgets(ctk.CTkScrollableFrame):
 
         i = 0
         for record in history:
-            if (self.parent.account.bankAccNum == record[1]): # user sent money
+            if (self.parent.account.BankAccNum == record[1]): # user sent money
                 sent = str(record[4]) + "\t" +str("{:.2f}".format(record[3])) + " PLN   sent to: " + str(record[2])
                 recordLabel = ctk.CTkLabel(self,text=sent,padx=20)
             else:
@@ -29,4 +29,4 @@ class TransferHistoryWidgets(ctk.CTkScrollableFrame):
 
     def goBack(self):
         self.pack_forget()
-        self.parent.master.createMainPanel(self.parent.account.id)
+        self.parent.master.createMainPanel(self.parent.account.Id)

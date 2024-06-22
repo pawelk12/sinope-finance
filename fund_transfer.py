@@ -39,7 +39,7 @@ class TransferWidgets(ctk.CTkFrame):
     def Transfer(self):
 
         # if user entered his own account number
-        if(self.accountNumberEntry.get() == str(self.parent.account.bankAccNum)):
+        if(self.accountNumberEntry.get() == str(self.parent.account.BankAccNum)):
             self.statusLabel.configure(text="Invalid bank number", text_color="#ff6633")
             return
 
@@ -49,7 +49,7 @@ class TransferWidgets(ctk.CTkFrame):
             notEnoughFunds = "You do not have enough funds in your account"
             invalidNumber = "Invalid bank number"
 
-            result = TransferMoney(self.parent.account.id, self.accountNumberEntry.get(), self.amountEntry.get())
+            result = TransferMoney(self.parent.account.Id, self.accountNumberEntry.get(), self.amountEntry.get())
             if(result == invalidValue):
                 self.statusLabel.configure(text=invalidValue, text_color="#ff6633")
             elif(result == notEnoughFunds):
@@ -62,7 +62,7 @@ class TransferWidgets(ctk.CTkFrame):
                 self.statusLabel.configure(text=transferSuccess, text_color="#009900")
 
                 # update account object created in MainWidgets 
-                data = GetData(self.parent.account.id)
+                data = GetData(self.parent.account.Id)
                 data_list = list(data[0])
                 data_list.pop(2)
                 self.parent.account.update(*data_list)
@@ -74,4 +74,4 @@ class TransferWidgets(ctk.CTkFrame):
 
     def goBack(self):
         self.pack_forget()
-        self.parent.master.createMainPanel(self.parent.account.id)
+        self.parent.master.createMainPanel(self.parent.account.Id)

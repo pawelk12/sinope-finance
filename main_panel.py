@@ -24,7 +24,7 @@ class MainWidgets(ctk.CTkFrame):
         self.mainFrame._corner_radius = 32
 
 
-        self.balanceLabel = ctk.CTkLabel(self.mainFrame, text="{:.2f}".format(self.account.balance) ,font=("Arial",80),
+        self.balanceLabel = ctk.CTkLabel(self.mainFrame, text="{:.2f}".format(self.account.Balance) ,font=("Arial",80),
                                          fg_color="transparent")
         self.currencyLabel = ctk.CTkLabel(self.mainFrame, text="PLN" ,font=("Arial",40),
                                          fg_color="transparent")
@@ -69,7 +69,7 @@ class MainWidgets(ctk.CTkFrame):
 
     def transferHistory(self):
         self.pack_forget()
-        history = GetTransferHistory(self.account.bankAccNum) #list of tuples
+        history = GetTransferHistory(self.account.BankAccNum) #list of tuples
         transferHistoryFrame = TransferHistoryWidgets(self.master, self, history)
 
     def accountWidgets(self):

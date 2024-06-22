@@ -23,10 +23,10 @@ class AccountWidgets(ctk.CTkFrame):
 
     def goBack(self):
         self.pack_forget()
-        self.parent.master.createMainPanel(self.parent.account.id)
+        self.parent.master.createMainPanel(self.parent.account.Id)
 
     def showLoginRecords(self):
-        login_history = getLoginRecords(self.parent.account.id)
+        login_history = getLoginRecords(self.parent.account.Id)
         self.pack_forget()
         LoginRecordsFrame = LoginRecords(self.master, self.parent, login_history)
 
