@@ -17,16 +17,25 @@ class MainWidgets(ctk.CTkFrame):
         data_list.pop(2)
         self.account = Account(*data_list)
         self.mainFrame = ctk.CTkFrame(self, fg_color="transparent")
+
+
+        self.mainFrame._border_width = 3
+        self.mainFrame._border_color = "#3d9bd7"
+        self.mainFrame._corner_radius = 32
+
+
         self.balanceLabel = ctk.CTkLabel(self.mainFrame, text="{:.2f}".format(self.account.balance) ,font=("Arial",80),
                                          fg_color="transparent")
         self.currencyLabel = ctk.CTkLabel(self.mainFrame, text="PLN" ,font=("Arial",40),
                                          fg_color="transparent")
-        self.balanceLabel.pack()
-        self.currencyLabel.pack()
         
+        self.timeLabel = ctk.CTkLabel(self.mainFrame,font=('Arial',20),
+                                   fg_color="transparent")
+        self.update()
+        self.timeLabel.pack(anchor="ne")
+        self.balanceLabel.pack(anchor="s", expand=True)
+        self.currencyLabel.pack(anchor="n", expand=True)
 
-        #self.timeLabel = tkinter.Label(self.mainFrame,font=('Arial',20),fg="black",bg="#F9F7E6")
-        #self.timeLabel.grid(row=1,column=0)
 
         ############### Bar frame for pages
 
@@ -46,7 +55,7 @@ class MainWidgets(ctk.CTkFrame):
 
         ############### Packing frames and stuff
         self.barFrame.pack(side=ctk.LEFT,fill=ctk.Y)
-        self.mainFrame.pack(side=ctk.LEFT, expand=True, fill=ctk.X) #fill=ctk.BOTH, 
+        self.mainFrame.pack(side=ctk.LEFT,fill=ctk.BOTH, expand=True)
         self.pack(fill=ctk.BOTH, expand=True)
 
     def update(self):

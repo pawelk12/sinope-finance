@@ -70,12 +70,23 @@ class PersonalInfoWidgets(ctk.CTkFrame):
         username = self.parent.account.username
         email = self.parent.account.email
 
+        if(Login(username,hashed_passwd)== None):
+            self.statusLabel.configure(text="Incorrect password",text_color="#ff6633")
+            self.passwordEntry.delete(0, ctk.END)
+            return
+
+        if(IfLoginExists(self.usernameEntry.get())):
+            self.statusLabel.configure(text="This username is already taken",text_color="#ff6633")
+            self.passwordEntry.delete(0, ctk.END)
+           
+
         if(Login(username,hashed_passwd)!= None and #user changes email
            self.usernameEntry.get() == username and self.emailEntry.get()!=email):
             
             EditPersonalInfo(self.parent.account.id, self.usernameEntry.get(), self.emailEntry.get())
             self.updateAccount()
             self.statusLabel.configure(text="Changes have been saved",text_color="#009900")
+            self.passwordEntry.delete(0, ctk.END)
 
         elif(Login(username,hashed_passwd)!=None and #user changes login
              not IfLoginExists(self.usernameEntry.get()) and
@@ -84,6 +95,7 @@ class PersonalInfoWidgets(ctk.CTkFrame):
             EditPersonalInfo(self.parent.account.id, self.usernameEntry.get(), self.emailEntry.get())
             self.updateAccount()
             self.statusLabel.configure(text="Changes have been saved",text_color="#009900")
+            self.passwordEntry.delete(0, ctk.END)
             
         elif(Login(username,hashed_passwd)!= None and #user changes login and email
              not IfLoginExists(self.usernameEntry.get()) and
@@ -92,11 +104,13 @@ class PersonalInfoWidgets(ctk.CTkFrame):
             EditPersonalInfo(self.parent.account.id, self.usernameEntry.get(), self.emailEntry.get())
             self.updateAccount()
             self.statusLabel.configure(text="Changes have been saved",text_color="#009900")
+            self.passwordEntry.delete(0, ctk.END)
 
         elif(Login(username,hashed_passwd)!= None and
              self.usernameEntry.get()==username and self.emailEntry.get()==email):
 
             self.statusLabel.configure(text="No changes have been made",text_color="#ff6633")
+            self.passwordEntry.delete(0, ctk.END)
 
 
     def goBack(self):
