@@ -1,10 +1,10 @@
-import customtkinter as ctk
+import tkinter as tk
 from login import LoginWidgets
 from register import RegisterWidgets
 from welcome import WelcomeWidgets
 from main_panel import MainWidgets
 from tkinter import PhotoImage
-import tkinter as tk
+
 
 
 class BankApp(tk.Tk):

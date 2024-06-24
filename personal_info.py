@@ -3,7 +3,6 @@ import hashlib
 from db_service import Login
 from db_service import IfLoginExists
 from db_service import EditPersonalInfo
-from db_service import GetData
 
 class PersonalInfoWidgets(ctk.CTkFrame):
     def __init__(self,master, mainframe):
@@ -68,9 +67,10 @@ class PersonalInfoWidgets(ctk.CTkFrame):
     def SaveChanges(self):
         hashed_passwd = hashlib.sha256(self.passwordEntry.get().encode()).hexdigest()
         username = self.parent.account.Username
-        email = self.parent.account.Email
+        email = self.parent.account.Username
 
         if(Login(username,hashed_passwd)== None):
+            print(self.parent.account.Username+self.parent.account.Email)
             self.statusLabel.configure(text="Incorrect password",text_color="#ff6633")
             self.passwordEntry.delete(0, ctk.END)
             return
@@ -78,13 +78,13 @@ class PersonalInfoWidgets(ctk.CTkFrame):
         if(IfLoginExists(self.usernameEntry.get())):
             self.statusLabel.configure(text="This username is already taken",text_color="#ff6633")
             self.passwordEntry.delete(0, ctk.END)
-           
+            return
 
         if(Login(username,hashed_passwd)!= None and #user changes email
            self.usernameEntry.get() == username and self.emailEntry.get()!=email):
             
             EditPersonalInfo(self.parent.account.Id, self.usernameEntry.get(), self.emailEntry.get())
-            self.updateAccount()
+            self.parent.account.Update()
             self.statusLabel.configure(text="Changes have been saved",text_color="#009900")
             self.passwordEntry.delete(0, ctk.END)
 
@@ -93,7 +93,7 @@ class PersonalInfoWidgets(ctk.CTkFrame):
              self.usernameEntry.get()!=username and self.emailEntry.get()==email):
             
             EditPersonalInfo(self.parent.account.Id, self.usernameEntry.get(), self.emailEntry.get())
-            self.updateAccount()
+            self.parent.account.Update()
             self.statusLabel.configure(text="Changes have been saved",text_color="#009900")
             self.passwordEntry.delete(0, ctk.END)
             
@@ -102,7 +102,7 @@ class PersonalInfoWidgets(ctk.CTkFrame):
              self.usernameEntry.get()!=username and self.emailEntry.get()!=email):
 
             EditPersonalInfo(self.parent.account.Id, self.usernameEntry.get(), self.emailEntry.get())
-            self.updateAccount()
+            self.parent.account.Update()
             self.statusLabel.configure(text="Changes have been saved",text_color="#009900")
             self.passwordEntry.delete(0, ctk.END)
 
@@ -116,9 +116,3 @@ class PersonalInfoWidgets(ctk.CTkFrame):
     def goBack(self):
         self.pack_forget()
         self.parent.accountWidgets()
-
-    def updateAccount(self):
-        data = GetData(self.parent.account.Id)
-        data_list = list(data[0])
-        data_list.pop(2)
-        self.parent.account.update(*data_list)

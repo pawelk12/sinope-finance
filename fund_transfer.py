@@ -1,6 +1,5 @@
 import customtkinter as ctk
 from db_service import TransferMoney
-from db_service import GetData
 
 class TransferWidgets(ctk.CTkFrame):
     def __init__(self,master, mainframe):
@@ -62,10 +61,7 @@ class TransferWidgets(ctk.CTkFrame):
                 self.statusLabel.configure(text=transferSuccess, text_color="#009900")
 
                 # update account object created in MainWidgets 
-                data = GetData(self.parent.account.Id)
-                data_list = list(data[0])
-                data_list.pop(2)
-                self.parent.account.update(*data_list)
+                self.parent.account.Update()
 
             else:
                 self.statusLabel.configure(text="Unexpected error", text_color="#ff6633")

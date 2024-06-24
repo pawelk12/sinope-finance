@@ -97,9 +97,20 @@ def Login(login, hashed_passwd):
         return None
 
 
+
 def GetData(account_id):
     mycursor = db.cursor()
     sqlGetData = "SELECT * FROM ACCOUNTS\
+                  WHERE ID = %s"
+    mycursor.execute(sqlGetData, (account_id,))
+    data = mycursor.fetchall()
+    mycursor.close()
+    return data
+
+def UpdateData(account_id):
+    mycursor = db.cursor()
+    sqlGetData = "SELECT LOGIN, EMAIL, BALANCE\
+                  FROM ACCOUNTS\
                   WHERE ID = %s"
     mycursor.execute(sqlGetData, (account_id,))
     data = mycursor.fetchall()

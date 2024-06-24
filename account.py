@@ -1,4 +1,5 @@
 import datetime
+from db_service import UpdateData
 class Account:
 
     def __init__(self, accountId, username, firstName, lastName, email, birthDate, balance, startBonus, lastLogin, bankAccNum):
@@ -95,14 +96,11 @@ class Account:
         self.__bankAccNum = bankAccNum
 
 
-    def update(self, accountId, login, firstName, lastName, email, birthDate, balance, startBonus, lastLogin, bankAccNum):
-        self.__id = accountId
-        self.__username = login
-        self.__firstName = firstName
-        self.__lastName = lastName
-        self.__email = email
-        self.__birthDate = birthDate
-        self.__balance = balance
-        self.__startBonus = startBonus
-        self.__lastLogin = lastLogin
-        self.__bankAccNum = bankAccNum
+    def Update(self):
+        data = UpdateData(self.Id)
+        #LOGIN, EMAIL, BALANCE
+        data_list = list(data[0])
+        self.__username = data_list[0]
+        self.__email = data_list[1]
+        self.__balance = data_list[2]
+

@@ -1,5 +1,4 @@
 import customtkinter as ctk
-from tkinter import PhotoImage
 from db_service import Login as ReadFromDB, addLoginRecord
 import hashlib
 

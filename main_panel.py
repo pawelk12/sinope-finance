@@ -3,19 +3,14 @@ import customtkinter as ctk
 from account import Account
 from fund_transfer import TransferWidgets
 from transfer_history import TransferHistoryWidgets
-from personal_info import PersonalInfoWidgets
 from db_service import GetData, GetTransferHistory
 from account_widgets import AccountWidgets
 
 class MainWidgets(ctk.CTkFrame):
-    def __init__(self,master, account_id):
+    def __init__(self,master, accountId):
         super().__init__(master)
         
-        data = GetData(account_id)
-        # in order to remove password
-        data_list = list(data[0])
-        data_list.pop(2)
-        self.account = Account(*data_list)
+        self.createAccount(accountId)
         self.mainFrame = ctk.CTkFrame(self, fg_color="transparent")
 
 
@@ -75,6 +70,13 @@ class MainWidgets(ctk.CTkFrame):
     def accountWidgets(self):
         self.pack_forget()
         accountFrame = AccountWidgets(self.master, self)
+
+    def createAccount(self, accountId):
+        data = GetData(accountId)
+        # in order to remove password
+        data_list = list(data[0])
+        data_list.pop(2)
+        self.account = Account(*data_list)
 
     def logOut(self):
         del self.account
