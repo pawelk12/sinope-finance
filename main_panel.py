@@ -5,6 +5,7 @@ from fund_transfer import TransferWidgets
 from transfer_history import TransferHistoryWidgets
 from db_service import GetData, GetTransferHistory
 from account_widgets import AccountWidgets
+from savings_deposits import SavingsDepositsWidgets
 
 class MainWidgets(ctk.CTkFrame):
     def __init__(self,master, accountId):
@@ -23,13 +24,17 @@ class MainWidgets(ctk.CTkFrame):
                                          fg_color="transparent")
         self.currencyLabel = ctk.CTkLabel(self.mainFrame, text="PLN" ,font=("Arial",40),
                                          fg_color="transparent")
-        
         self.timeLabel = ctk.CTkLabel(self.mainFrame,font=('Arial',20),
                                    fg_color="transparent")
+        self.savingsButton = ctk.CTkButton(self.mainFrame,
+                                           text="Savings Deposits"
+                                           ,command=self.savingsDeposits)
+
         self.update()
         self.timeLabel.pack(anchor="ne")
         self.balanceLabel.pack(anchor="s", expand=True)
         self.currencyLabel.pack(anchor="n", expand=True)
+        self.savingsButton.pack()
 
 
         ############### Bar frame for pages
@@ -82,3 +87,7 @@ class MainWidgets(ctk.CTkFrame):
         del self.account
         self.pack_forget()
         self.master.createWelcomWingets()
+
+    def savingsDeposits(self):
+        self.pack_forget()
+        savingsDepositsFrame = SavingsDepositsWidgets(self.master, self)

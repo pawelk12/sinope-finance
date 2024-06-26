@@ -40,6 +40,27 @@ try:
         DATE_OF_LOGIN DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,\
         FOREIGN KEY (USER_ID) REFERENCES ACCOUNTS(ID));")
 
+    mycursor.execute("CREATE TABLE IF NOT EXISTS DEPOSIT_OFFERS (\
+        ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,\
+        CURRENCY VARCHAR(255) NOT NULL,\
+        MIN_AMOUNT FLOAT NOT NULL,\
+        MAX_AMOUNT FLOAT NOT NULL,\
+        DURATION VARCHAR(255) NOT NULL,\
+        INTEREST_RATE FLOAT NOT NULL,\
+        TYPE_OF_INTEREST_RATE VARCHAR(255) NOT NULL,\
+        INTEREST_CAPITALIZATION VARCHAR(255) NOT NULL);")
+
+    mycursor.execute("CREATE TABLE IF NOT EXISTS SAVINGS_DEPOSITS (\
+        ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,\
+        ACCOUNT_ID INT NOT NULL,\
+        OFFER_ID INT NOT NULL,\
+        AMOUNT FLOAT NOT NULL,\
+        START_DATE DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,\
+        END_DATE DATETIME NOT NULL,\
+        FOREIGN KEY (ACCOUNT_ID) REFERENCES ACCOUNTS(ID),\
+        FOREIGN KEY (OFFER_ID) REFERENCES DEPOSIT_OFFERS(ID));")
+    
+    db.commit()
     mycursor.close()
     
 except mysql.connector.Error:
@@ -205,3 +226,29 @@ def getLoginRecords(account_id):
     history = mycursor.fetchall()
     mycursor.close()
     return history
+
+def setDepositsOffers():
+    mycursor = db.cursor()
+    mycursor.execute("SELECT COUNT(ID) AS NUMBER_OF_OFFERS FROM DEPOSIT_OFFERS;")
+    numberOfOffers = mycursor.fetchone()[0]
+    if numberOfOffers < 3:
+        mycursor.execute("INSERT INTO DEPOSIT_OFFERS (CURRENCY,MIN_AMOUNT,MAX_AMOUNT,DURATION,INTEREST_RATE,TYPE_OF_INTEREST_RATE,\
+                         INTEREST_CAPITALIZATION)\
+                         VALUES ('EUR', 500.00, 10000.00, '90 days', 2.5, 'fixed rate', 'end of the period' );")
+        mycursor.execute("INSERT INTO DEPOSIT_OFFERS (CURRENCY,MIN_AMOUNT,MAX_AMOUNT,DURATION,INTEREST_RATE,TYPE_OF_INTEREST_RATE,\
+                         INTEREST_CAPITALIZATION)\
+                         VALUES ('CHF', 2000.00, 50000.00, '180 days', 2.7, 'fixed rate', 'end of the period' );")
+        mycursor.execute("INSERT INTO DEPOSIT_OFFERS (CURRENCY,MIN_AMOUNT,MAX_AMOUNT,DURATION,INTEREST_RATE,TYPE_OF_INTEREST_RATE,\
+                         INTEREST_CAPITALIZATION)\
+                         VALUES ('USD', 10000.00, 200000.00, '365 days', 3.3, 'fixed rate', 'end of the period' );")
+        db.commit()
+        mycursor.close()
+    else:
+        mycursor.close()
+    
+def getSavingsDepositOffers():
+    mycursor = db.cursor()
+    mycursor.execute("SELECT * FROM DEPOSIT_OFFERS")
+    depositOffers = mycursor.fetchall()
+    mycursor.close()
+    return depositOffers
