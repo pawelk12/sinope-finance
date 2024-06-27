@@ -1,12 +1,13 @@
 import customtkinter as ctk
 from db_service import getSavingsDepositOffers
+import requests
 
 class SavingsDepositsWidgets(ctk.CTkFrame):
     def __init__(self,master, mainframe):
         super().__init__(master)
 
         self.parent = mainframe
-
+        self.offerId = None
 
         #mainframe
         self.mainFrame = ctk.CTkFrame(self, fg_color="transparent")
@@ -41,13 +42,14 @@ class SavingsDepositsWidgets(ctk.CTkFrame):
         for i,offer in enumerate(myDepositOffers):
             offerLabel = ctk.CTkLabel(self.depositOffers, text=offer,font=("Arial",20))
             offerLabel.grid(row=i+2,column=0)
+            #selectButton = ctk.CTkButton(self.depositOffers,text="wybierz",command=lambda offerId=i+1 :self.selectOffer(offerId))
             selectButton = ctk.CTkButton(self.depositOffers,text="wybierz",command=lambda offerId=i+1 :self.selectOffer(offerId))
             selectButton.grid(row=i+2,column=1)
 
 
         #confirm your offer
         self.confirmOffer = ctk.CTkFrame(self, fg_color="transparent")
-        goBackButton = ctk.CTkButton(self.confirmOffer, text="<-Back",command=lambda: self.goBack(self.confirmOffer))
+        goBackButton = ctk.CTkButton(self.confirmOffer, text="<-Back",command=lambda :self.goBackFromConfirmation())
         goBackButton.grid(row=0,column=0,sticky="w")
         amountLabel = ctk.CTkLabel(self.confirmOffer, text="Amount")
         amountLabel.grid(row=2,column=0)
@@ -57,7 +59,11 @@ class SavingsDepositsWidgets(ctk.CTkFrame):
                                           border_color="#3d9bd7")
         self.amountEntry.grid(row=2,column=1)
 
-
+        self.statusLabel = ctk.CTkLabel(self.confirmOffer, text="",text_color="#ff6633")
+        self.statusLabel.grid(row=3,column=0)
+        self.exchangeRate = ctk.CTkLabel(self.confirmOffer, text="")
+        self.exchangeRate.grid(row=4,column=0)
+        self.acceptOfferButton = ctk.CTkButton(self.confirmOffer, text="Accept offer",command=self.acceptOffer)
 
 
         #packing stuff
@@ -76,16 +82,61 @@ class SavingsDepositsWidgets(ctk.CTkFrame):
         self.mainFrame.pack_forget()
         self.depositOffers.pack()
 
-    def selectOffer(self, offerId):
+
+    def selectOffer(self, newId):
+        self.setId(newId)
         self.depositOffers.pack_forget()
-        selectedOffer = getSavingsDepositOffers()[offerId-1]
+        selectedOffer = getSavingsDepositOffers()[self.offerId]
         offerLabel = ctk.CTkLabel(self.confirmOffer, text=selectedOffer,font=("Arial",20))
         offerLabel.grid(row=1,column=1)
-        currencyLabel = ctk.CTkLabel(self.confirmOffer, text=selectedOffer[1],font=("Arial",20))
+        currencyLabel = ctk.CTkLabel(self.confirmOffer, text='PLN',font=("Arial",20))
         currencyLabel.grid(row=2,column=3)
         self.confirmOffer.pack()
+        self.update()
+
+
+    def update(self):
+        host = 'api.frankfurter.app'
+        to = getSavingsDepositOffers()[self.offerId][1]
+        if(self.amountEntry.get()==''):
+            self.exchangeRate.configure(text='0.00 '+f'{to}')
+        try:
+            if(float(self.amountEntry.get())>=getSavingsDepositOffers()[self.offerId][2] and
+                     float(self.amountEntry.get())<=getSavingsDepositOffers()[self.offerId][3]):
+                self.statusLabel.configure(text="")
+                response = requests.get(f'https://{host}/latest?amount={float(self.amountEntry.get())}&from=PLN&to={to}')
+                self.exchangeRate.configure(text=str(response.json()['rates'][f'{to}']) + " " + f'{to}')
+                self.acceptOfferButton.grid(row=5,column=0)
+            else:
+                minAmount = getSavingsDepositOffers()[self.offerId][2]
+                maxAmount = getSavingsDepositOffers()[self.offerId][3]
+                self.statusLabel.configure(text=f"min amount: {minAmount} max amount: {maxAmount}")
+        except requests.ConnectionError as e:
+            self.statusLabel.configure(text=f"{e}")
+        except ValueError:
+            if not self.amountEntry.get() == '':
+                self.statusLabel.configure(text="You have to enter a number")
+                print("You have to enter a number")
+        self.updateProcessId = self.after(1000, self.update)
+
+
+
+    def goBackFromConfirmation(self):
+        self.amountEntry.delete(0, ctk.END)
+        self.exchangeRate.configure(text="")
+        self.acceptOfferButton.grid_forget()
+        self.confirmOffer.pack_forget()
+        self.mainFrame.pack()
+        self.after_cancel(self.updateProcessId)
+
+
+
+    def acceptOffer(self, amount):
+        pass
 
     def goBack(self, frame):
         frame.pack_forget()
         self.mainFrame.pack()
-    
+
+    def setId(self, newId):
+        self.offerId = newId - 1
