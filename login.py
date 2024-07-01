@@ -63,7 +63,7 @@ class LoginWidgets(ctk.CTkFrame):
 
             # configuring window
             self.master.createMainPanel(ReadFromDB(self.usernameEntry.get(), hashlib.sha256(self.passwordEntry.get().encode()).hexdigest()))
-            self.master.resizeAndCenter(1200,800)
+            self.master.resizeAndCenter(1200,750)
             self.master.resizable(True, True)
             self.master.minsize(600,400)
 
