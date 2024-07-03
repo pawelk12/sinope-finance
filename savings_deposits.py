@@ -1,5 +1,5 @@
 import customtkinter as ctk
-from db_service import getSavingsDepositOffers
+from db_service import getSavingsDepositOffers, acceptSavingDeposit
 import requests
 
 class SavingsDepositsWidgets(ctk.CTkFrame):
@@ -71,7 +71,7 @@ class SavingsDepositsWidgets(ctk.CTkFrame):
         self.statusLabel.grid(row=4,column=0)
         self.exchangeRate = ctk.CTkLabel(self.confirmOffer, text="")
         self.exchangeRate.grid(row=5,column=0)
-        self.acceptOfferButton = ctk.CTkButton(self.confirmOffer, text="Accept offer",command=self.acceptOffer)
+        self.acceptOfferButton = ctk.CTkButton(self.confirmOffer, text="Accept offer")
 
 
         #packing stuff
@@ -116,6 +116,8 @@ class SavingsDepositsWidgets(ctk.CTkFrame):
                 self.statusLabel.configure(text="")
                 response = requests.get(f'https://{host}/latest?amount={float(self.amountEntry.get())}&from=PLN&to={to}')
                 self.exchangeRate.configure(text=str(response.json()['rates'][f'{to}']) + " " + f'{to}')
+                self.acceptOfferButton.configure(command=lambda:self.acceptOffer(self.offerId,float(self.amountEntry.get()),
+                                                                          response.json()['rates'][f'{to}']))
                 self.acceptOfferButton.grid(row=6,column=0)
             elif(float(self.amountEntry.get())<getSavingsDepositOffers()[self.offerId][2] or
                  float(self.amountEntry.get())>getSavingsDepositOffers()[self.offerId][3]):
@@ -127,7 +129,8 @@ class SavingsDepositsWidgets(ctk.CTkFrame):
             else:
                 self.statusLabel.configure(text="You do not have enough funds in your account")
         except requests.ConnectionError as e:
-            self.statusLabel.configure(text=f"{e}")
+            #self.statusLabel.configure(text=f"{e}")
+            self.statusLabel.configure(text="Connection error")
         except ValueError:
             if not self.amountEntry.get() == '':
                 self.statusLabel.configure(text="You have to enter a number")
@@ -147,8 +150,12 @@ class SavingsDepositsWidgets(ctk.CTkFrame):
 
 
     def acceptOffer(self, offerId, amount, exchangedAmount):
-        # write to db, update account ensure that 
-        pass
+        #write to db (account_id, offer_id, amount in exchanged currency)
+        acceptSavingDeposit(self.parent.account.Id, offerId, exchangedAmount)
+        currBalance = self.parent.account.Balance - amount
+        self.parent.account.Balance =  currBalance
+        print(self.parent.account.Balance)
+        # delete option from offer list for my account
 
     def goBack(self, frame):
         frame.pack_forget()

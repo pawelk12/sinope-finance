@@ -118,7 +118,6 @@ def Login(login, hashed_passwd):
         return None
 
 
-
 def GetData(account_id):
     mycursor = db.cursor()
     sqlGetData = "SELECT * FROM ACCOUNTS\
@@ -252,3 +251,14 @@ def getSavingsDepositOffers():
     depositOffers = mycursor.fetchall()
     mycursor.close()
     return depositOffers
+
+
+def acceptSavingDeposit(accountID, offerId, exchangedAmount):
+    #(account_id, offer_id, amount in exchanged currency)
+    mycursor = db.cursor()
+    # find duration of deposit form offert table
+    mycursor.execute("SELECT DURATION FROM DEPOSIT_OFFERS\
+                     WHERE ID = %s;", (offerId,))
+    duration = mycursor.fetchone()[0]
+    print(duration)
+    mycursor.close()
