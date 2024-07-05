@@ -116,7 +116,8 @@ class SavingsDepositsWidgets(ctk.CTkFrame):
                 self.statusLabel.configure(text="")
                 response = requests.get(f'https://{host}/latest?amount={float(self.amountEntry.get())}&from=PLN&to={to}')
                 self.exchangeRate.configure(text=str(response.json()['rates'][f'{to}']) + " " + f'{to}')
-                self.acceptOfferButton.configure(command=lambda:self.acceptOffer(self.offerId,float(self.amountEntry.get()),
+                mysqlOfferId=self.offerId + 1
+                self.acceptOfferButton.configure(command=lambda:self.acceptOffer(mysqlOfferId,float(self.amountEntry.get()),
                                                                           response.json()['rates'][f'{to}']))
                 self.acceptOfferButton.grid(row=6,column=0)
             elif(float(self.amountEntry.get())<getSavingsDepositOffers()[self.offerId][2] or
@@ -128,8 +129,7 @@ class SavingsDepositsWidgets(ctk.CTkFrame):
                 self.acceptOfferButton.grid_forget()
             else:
                 self.statusLabel.configure(text="You do not have enough funds in your account")
-        except requests.ConnectionError as e:
-            #self.statusLabel.configure(text=f"{e}")
+        except requests.ConnectionError:
             self.statusLabel.configure(text="Connection error")
         except ValueError:
             if not self.amountEntry.get() == '':
@@ -150,12 +150,8 @@ class SavingsDepositsWidgets(ctk.CTkFrame):
 
 
     def acceptOffer(self, offerId, amount, exchangedAmount):
-        #write to db (account_id, offer_id, amount in exchanged currency)
-        acceptSavingDeposit(self.parent.account.Id, offerId, exchangedAmount)
-        currBalance = self.parent.account.Balance - amount
-        self.parent.account.Balance =  currBalance
-        print(self.parent.account.Balance)
-        # delete option from offer list for my account
+        acceptSavingDeposit(self.parent.account.Id, offerId, amount, exchangedAmount)
+        #refresh account
 
     def goBack(self, frame):
         frame.pack_forget()

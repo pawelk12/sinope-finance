@@ -1,4 +1,5 @@
 import mysql.connector
+import datetime
 
 
 try:
@@ -55,7 +56,6 @@ try:
         ACCOUNT_ID INT NOT NULL,\
         OFFER_ID INT NOT NULL,\
         AMOUNT FLOAT NOT NULL,\
-        START_DATE DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,\
         END_DATE DATETIME NOT NULL,\
         FOREIGN KEY (ACCOUNT_ID) REFERENCES ACCOUNTS(ID),\
         FOREIGN KEY (OFFER_ID) REFERENCES DEPOSIT_OFFERS(ID));")
@@ -247,18 +247,40 @@ def setDepositsOffers():
     
 def getSavingsDepositOffers():
     mycursor = db.cursor()
-    mycursor.execute("SELECT * FROM DEPOSIT_OFFERS")
-    depositOffers = mycursor.fetchall()
-    mycursor.close()
-    return depositOffers
+    mycursor.execute("SELECT DISTINCT OFFER_ID FROM SAVINGS_DEPOSITS;")
+    ids = mycursor.fetchall()
+    idList = [element[0] for element in ids]
+    if idList:
+        placeholderList = ["%s"] * len(idList) 
+        placeholders = ",".join(placeholderList)
+        idTuple = tuple(idList)
+        mycursor.execute(f"SELECT * FROM DEPOSIT_OFFERS WHERE ID NOT IN ({placeholders})", idTuple)
+        depositOffers = mycursor.fetchall()
+        mycursor.close()
+        return depositOffers
+    else:
+        mycursor.execute("SELECT * FROM DEPOSIT_OFFERS")
+        depositOffers = mycursor.fetchall()
+        mycursor.close()
+        return depositOffers
 
 
-def acceptSavingDeposit(accountID, offerId, exchangedAmount):
+def acceptSavingDeposit(accountId, offerId, amount, exchangedAmount):
     #(account_id, offer_id, amount in exchanged currency)
     mycursor = db.cursor()
-    # find duration of deposit form offert table
+    # find duration of deposit from offer table
     mycursor.execute("SELECT DURATION FROM DEPOSIT_OFFERS\
                      WHERE ID = %s;", (offerId,))
-    duration = mycursor.fetchone()[0]
-    print(duration)
+    text = mycursor.fetchone()[0]
+    durationList = text.split()
+    duration = int(durationList[0])
+    startDate = datetime.date.today()
+    endDate = startDate + datetime.timedelta(days=duration)
+    #accountId, offerID, EchangedAmount, EndDate
+    mycursor.execute("INSERT INTO SAVINGS_DEPOSITS (ACCOUNT_ID, OFFER_ID, AMOUNT, END_DATE)\
+                     VALUES (%s, %s, %s, %s);", (accountId, offerId, exchangedAmount, endDate))
+    mycursor.execute(("UPDATE ACCOUNTS\
+                SET BALANCE = BALANCE - %s\
+                WHERE ID = %s"), (float(amount), accountId,))
+    db.commit()
     mycursor.close()
