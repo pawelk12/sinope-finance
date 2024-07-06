@@ -1,4 +1,3 @@
-import datetime
 from db_service import UpdateData
 class Account:
 

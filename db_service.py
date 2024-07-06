@@ -244,26 +244,28 @@ def setDepositsOffers():
         mycursor.close()
     else:
         mycursor.close()
+
     
 def getSavingsDepositOffers():
+    mycursor = db.cursor()
+    mycursor.execute("SELECT * FROM DEPOSIT_OFFERS")
+    depositOffers = mycursor.fetchall()
+    mycursor.close()
+    return depositOffers
+
+def getSavingsDepositTakenIds(): #ids of offers that have been taken
     mycursor = db.cursor()
     mycursor.execute("SELECT DISTINCT OFFER_ID FROM SAVINGS_DEPOSITS;")
     ids = mycursor.fetchall()
     idList = [element[0] for element in ids]
-    if idList:
-        placeholderList = ["%s"] * len(idList) 
-        placeholders = ",".join(placeholderList)
-        idTuple = tuple(idList)
-        mycursor.execute(f"SELECT * FROM DEPOSIT_OFFERS WHERE ID NOT IN ({placeholders})", idTuple)
-        depositOffers = mycursor.fetchall()
-        mycursor.close()
-        return depositOffers
-    else:
-        mycursor.execute("SELECT * FROM DEPOSIT_OFFERS")
-        depositOffers = mycursor.fetchall()
-        mycursor.close()
-        return depositOffers
+    return idList
 
+def getSavingsDepositOffersIds():
+    mycursor = db.cursor()
+    mycursor.execute("SELECT ID FROM DEPOSIT_OFFERS;")
+    ids = mycursor.fetchall()
+    idList = [element[0] for element in ids]
+    return idList
 
 def acceptSavingDeposit(accountId, offerId, amount, exchangedAmount):
     #(account_id, offer_id, amount in exchanged currency)

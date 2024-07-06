@@ -1,5 +1,5 @@
 import customtkinter as ctk
-from db_service import getSavingsDepositOffers, acceptSavingDeposit
+from db_service import getSavingsDepositOffers, getSavingsDepositOffersIds, acceptSavingDeposit, getSavingsDepositTakenIds
 import requests
 
 class SavingsDepositsWidgets(ctk.CTkFrame):
@@ -42,13 +42,20 @@ class SavingsDepositsWidgets(ctk.CTkFrame):
         balanceLabel = ctk.CTkLabel(self.depositOffers, text=f"Your balance: {balance} PLN")
         balanceLabel.grid(row=2,column=0,columnspan=2,padx=20)
         myDepositOffers=getSavingsDepositOffers()
-        for i,offer in enumerate(myDepositOffers):
-            offerLabel = ctk.CTkLabel(self.depositOffers, text=offer,font=("Arial",20))
-            offerLabel.grid(row=i+3,column=0)
-            #selectButton = ctk.CTkButton(self.depositOffers,text="wybierz",command=lambda offerId=i+1 :self.selectOffer(offerId))
-            selectButton = ctk.CTkButton(self.depositOffers,text="wybierz",command=lambda offerId=i :self.selectOffer(offerId))
-            selectButton.grid(row=i+3,column=1)
-
+        takenIdList = getSavingsDepositTakenIds()
+        allIdList = getSavingsDepositOffersIds()
+        for i,offer in enumerate(myDepositOffers, start=1):
+            if(takenIdList == allIdList):
+                infoLabel = ctk.CTkLabel(self.depositOffers, text="Unfortunately we do not have deposit offer available for you",font=("Arial",20))
+                infoLabel.grid(row=i+3,column=0)
+                break
+            elif(i in takenIdList):
+                pass
+            else:
+                offerLabel = ctk.CTkLabel(self.depositOffers, text=offer,font=("Arial",20))
+                offerLabel.grid(row=i+3,column=0)
+                selectButton = ctk.CTkButton(self.depositOffers,text="wybierz",command=lambda offerId=i :self.selectOffer(offerId))
+                selectButton.grid(row=i+3,column=1)
 
         #confirm your offer
         self.confirmOffer = ctk.CTkFrame(self, fg_color="transparent")
@@ -94,7 +101,8 @@ class SavingsDepositsWidgets(ctk.CTkFrame):
     def selectOffer(self, newId):
         self.setId(newId)
         self.depositOffers.pack_forget()
-        selectedOffer = getSavingsDepositOffers()[self.offerId]
+        tupleId = self.offerId - 1
+        selectedOffer = getSavingsDepositOffers()[tupleId]
         self.offerLabel = ctk.CTkLabel(self.confirmOffer, text=selectedOffer,font=("Arial",20))
         self.offerLabel.grid(row=1,column=1)
         currencyLabel = ctk.CTkLabel(self.confirmOffer, text='PLN',font=("Arial",20))
@@ -105,25 +113,26 @@ class SavingsDepositsWidgets(ctk.CTkFrame):
 
     def update(self):
         host = 'api.frankfurter.app'
-        to = getSavingsDepositOffers()[self.offerId][1]
+        tupleId = self.offerId - 1
+        to = getSavingsDepositOffers()[tupleId][1]
         self.statusLabel.configure(text="")
         if(self.amountEntry.get()==''):
             self.exchangeRate.configure(text='0.00 '+f'{to}')
         try:
-            if(float(self.amountEntry.get())>=getSavingsDepositOffers()[self.offerId][2] and
-                     float(self.amountEntry.get())<=getSavingsDepositOffers()[self.offerId][3] and
+            if(float(self.amountEntry.get())>=getSavingsDepositOffers()[tupleId][2] and
+                     float(self.amountEntry.get())<=getSavingsDepositOffers()[tupleId][3] and
                      float(self.amountEntry.get())<=self.parent.account.Balance):
                 self.statusLabel.configure(text="")
                 response = requests.get(f'https://{host}/latest?amount={float(self.amountEntry.get())}&from=PLN&to={to}')
                 self.exchangeRate.configure(text=str(response.json()['rates'][f'{to}']) + " " + f'{to}')
-                mysqlOfferId=self.offerId + 1
+                mysqlOfferId=self.offerId
                 self.acceptOfferButton.configure(command=lambda:self.acceptOffer(mysqlOfferId,float(self.amountEntry.get()),
                                                                           response.json()['rates'][f'{to}']))
                 self.acceptOfferButton.grid(row=6,column=0)
-            elif(float(self.amountEntry.get())<getSavingsDepositOffers()[self.offerId][2] or
-                 float(self.amountEntry.get())>getSavingsDepositOffers()[self.offerId][3]):
-                minAmount = getSavingsDepositOffers()[self.offerId][2]
-                maxAmount = getSavingsDepositOffers()[self.offerId][3]
+            elif(float(self.amountEntry.get())<getSavingsDepositOffers()[tupleId][2] or
+                 float(self.amountEntry.get())>getSavingsDepositOffers()[tupleId][3]):
+                minAmount = getSavingsDepositOffers()[tupleId][2]
+                maxAmount = getSavingsDepositOffers()[tupleId][3]
                 self.statusLabel.configure(text=f"min amount: {minAmount} max amount: {maxAmount}")
                 self.exchangeRate.configure(text="")
                 self.acceptOfferButton.grid_forget()
@@ -151,7 +160,8 @@ class SavingsDepositsWidgets(ctk.CTkFrame):
 
     def acceptOffer(self, offerId, amount, exchangedAmount):
         acceptSavingDeposit(self.parent.account.Id, offerId, amount, exchangedAmount)
-        #refresh account
+        self.parent.account.Update()
+        self.goBackHome()
 
     def goBack(self, frame):
         frame.pack_forget()
