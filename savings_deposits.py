@@ -1,5 +1,6 @@
 import customtkinter as ctk
-from db_service import getSavingsDepositOffers, getSavingsDepositOffersIds, acceptSavingDeposit, getSavingsDepositTakenIds
+from db_service import getSavingsDepositOffers, getSavingsDepositOffersIds, acceptSavingDeposit, getSavingsDepositTakenIds,\
+getMySavingsDeposits, getCurrencyOfMyOffers
 import requests
 
 class SavingsDepositsWidgets(ctk.CTkFrame):
@@ -28,8 +29,21 @@ class SavingsDepositsWidgets(ctk.CTkFrame):
         self.myDeposits = ctk.CTkFrame(self, fg_color="transparent")
         goBackButton = ctk.CTkButton(self.myDeposits, text="<-Back",command=lambda: self.goBack(self.myDeposits))
         goBackButton.grid(row=0,column=0,sticky="w")
-        titleLabel = ctk.CTkLabel(self.myDeposits, text="moje depozyty",font=("Arial",20))
+        titleLabel = ctk.CTkLabel(self.myDeposits, text="My active deposits",font=("Arial",20))
         titleLabel.grid(row=1,column=0,columnspan=2,padx=20)
+        #get my savings deposits from db
+        mySavingsDeposits = getMySavingsDeposits(self.parent.account.Id)
+        if mySavingsDeposits:
+            for i,deposit in enumerate(mySavingsDeposits, start=1):
+                depositLabel = ctk.CTkLabel(self.myDeposits, text=str(deposit) +" "+str(getCurrencyOfMyOffers(deposit[0])[0]),font=("Arial",20))
+                depositLabel.grid(row=i+1,column=0)
+                resignButton = ctk.CTkButton(self.myDeposits,text="resign")
+                resignButton.grid(row=i+1,column=1)
+        else:
+            infoLabel = ctk.CTkLabel(self.myDeposits, text="You do not have any savings deposits",font=("Arial",20))
+            infoLabel.grid(row=2,column=0)
+
+
 
 
         #savings deposits offers frame
@@ -42,8 +56,11 @@ class SavingsDepositsWidgets(ctk.CTkFrame):
         balanceLabel = ctk.CTkLabel(self.depositOffers, text=f"Your balance: {balance} PLN")
         balanceLabel.grid(row=2,column=0,columnspan=2,padx=20)
         myDepositOffers=getSavingsDepositOffers()
-        takenIdList = getSavingsDepositTakenIds()
+        takenIdList = getSavingsDepositTakenIds(self.parent.account.Id)
+        takenIdList.sort()
+        print(takenIdList)
         allIdList = getSavingsDepositOffersIds()
+        print(allIdList)
         for i,offer in enumerate(myDepositOffers, start=1):
             if(takenIdList == allIdList):
                 infoLabel = ctk.CTkLabel(self.depositOffers, text="Unfortunately we do not have deposit offer available for you",font=("Arial",20))

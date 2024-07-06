@@ -253,11 +253,13 @@ def getSavingsDepositOffers():
     mycursor.close()
     return depositOffers
 
-def getSavingsDepositTakenIds(): #ids of offers that have been taken
+def getSavingsDepositTakenIds(accountId): #ids of offers that have been taken
     mycursor = db.cursor()
-    mycursor.execute("SELECT DISTINCT OFFER_ID FROM SAVINGS_DEPOSITS;")
+    mycursor.execute("SELECT DISTINCT OFFER_ID FROM SAVINGS_DEPOSITS\
+                     WHERE ACCOUNT_ID = %s", (accountId,))
     ids = mycursor.fetchall()
     idList = [element[0] for element in ids]
+    mycursor.close()
     return idList
 
 def getSavingsDepositOffersIds():
@@ -265,6 +267,7 @@ def getSavingsDepositOffersIds():
     mycursor.execute("SELECT ID FROM DEPOSIT_OFFERS;")
     ids = mycursor.fetchall()
     idList = [element[0] for element in ids]
+    mycursor.close()
     return idList
 
 def acceptSavingDeposit(accountId, offerId, amount, exchangedAmount):
@@ -286,3 +289,21 @@ def acceptSavingDeposit(accountId, offerId, amount, exchangedAmount):
                 WHERE ID = %s"), (float(amount), accountId,))
     db.commit()
     mycursor.close()
+
+def getMySavingsDeposits(accountId):
+    mycursor = db.cursor()
+    mycursor.execute("SELECT OFFER_ID, AMOUNT, END_DATE \
+                     FROM SAVINGS_DEPOSITS\
+                     WHERE ACCOUNT_ID = %s", (accountId,))
+    output = mycursor.fetchall()
+    mycursor.close()
+    return output
+
+def getCurrencyOfMyOffers(offerId):
+    mycursor = db.cursor()
+    mycursor.execute("SELECT CURRENCY \
+                     FROM DEPOSIT_OFFERS \
+                     WHERE ID = %s", (offerId,))
+    currency = mycursor.fetchone()
+    mycursor.close()
+    return currency
