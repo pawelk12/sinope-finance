@@ -281,7 +281,6 @@ def acceptSavingDeposit(accountId, offerId, amount, exchangedAmount):
     duration = int(durationList[0])
     startDate = datetime.date.today()
     endDate = startDate + datetime.timedelta(days=duration)
-    #accountId, offerID, EchangedAmount, EndDate
     mycursor.execute("INSERT INTO SAVINGS_DEPOSITS (ACCOUNT_ID, OFFER_ID, AMOUNT, END_DATE)\
                      VALUES (%s, %s, %s, %s);", (accountId, offerId, exchangedAmount, endDate))
     mycursor.execute(("UPDATE ACCOUNTS\
@@ -292,7 +291,7 @@ def acceptSavingDeposit(accountId, offerId, amount, exchangedAmount):
 
 def getMySavingsDeposits(accountId):
     mycursor = db.cursor()
-    mycursor.execute("SELECT OFFER_ID, AMOUNT, END_DATE \
+    mycursor.execute("SELECT OFFER_ID, AMOUNT, END_DATE\
                      FROM SAVINGS_DEPOSITS\
                      WHERE ACCOUNT_ID = %s", (accountId,))
     output = mycursor.fetchall()
@@ -301,8 +300,8 @@ def getMySavingsDeposits(accountId):
 
 def getCurrencyOfMyOffers(offerId):
     mycursor = db.cursor()
-    mycursor.execute("SELECT CURRENCY \
-                     FROM DEPOSIT_OFFERS \
+    mycursor.execute("SELECT CURRENCY\
+                     FROM DEPOSIT_OFFERS\
                      WHERE ID = %s", (offerId,))
     currency = mycursor.fetchone()
     mycursor.close()

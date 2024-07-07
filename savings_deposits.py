@@ -9,6 +9,8 @@ class SavingsDepositsWidgets(ctk.CTkFrame):
 
         self.parent = mainframe
         self.offerId = None
+        self.myDeposit = None
+        self.myDepositId = None
 
         #mainframe
         self.mainFrame = ctk.CTkFrame(self, fg_color="transparent")
@@ -25,7 +27,6 @@ class SavingsDepositsWidgets(ctk.CTkFrame):
         depositsOffersButton.grid(row=2,column=1,columnspan=2)
 
         #my savings deposits frame
-
         self.myDeposits = ctk.CTkFrame(self, fg_color="transparent")
         goBackButton = ctk.CTkButton(self.myDeposits, text="<-Back",command=lambda: self.goBack(self.myDeposits))
         goBackButton.grid(row=0,column=0,sticky="w")
@@ -35,16 +36,35 @@ class SavingsDepositsWidgets(ctk.CTkFrame):
         mySavingsDeposits = getMySavingsDeposits(self.parent.account.Id)
         if mySavingsDeposits:
             for i,deposit in enumerate(mySavingsDeposits, start=1):
-                depositLabel = ctk.CTkLabel(self.myDeposits, text=str(deposit) +" "+str(getCurrencyOfMyOffers(deposit[0])[0]),font=("Arial",20))
+                curr = str(getCurrencyOfMyOffers(deposit[0])[0])
+                text = str(deposit) +" "+curr
+                myDepositId = deposit[0]
+                amount = deposit[1]
+                depositLabel = ctk.CTkLabel(self.myDeposits, text=text,font=("Arial",20))
                 depositLabel.grid(row=i+1,column=0)
-                resignButton = ctk.CTkButton(self.myDeposits,text="resign")
+                resignButton = ctk.CTkButton(self.myDeposits,text="resign",
+                                            command = lambda mydeposit = text,
+                                            depositId = myDepositId,
+                                            amount = amount,
+                                            currency = curr:self.resign(mydeposit,depositId,amount,currency))
                 resignButton.grid(row=i+1,column=1)
         else:
             infoLabel = ctk.CTkLabel(self.myDeposits, text="You do not have any savings deposits",font=("Arial",20))
             infoLabel.grid(row=2,column=0)
-
-
-
+        
+        # confirm resignation frame
+        self.resignFrame = ctk.CTkFrame(self, fg_color="transparent")
+        self.myDepositLabel = ctk.CTkLabel(self.resignFrame, text=self.myDeposit,font=("Arial",20))
+        self.myDepositLabel.grid(row=0,column=0, columnspan = 2)
+        confirmationLabel = ctk.CTkLabel(self.resignFrame, text="Are you sure you want to cancel the deposit? Early cancellation will result in the loss of interest.",
+                                         font=("Arial",20))
+        confirmationLabel.grid(row=1,column=0,columnspan = 2)
+        self.myDepositStatusLabel = ctk.CTkLabel(self.resignFrame, text="",font=("Arial",20))
+        self.myDepositStatusLabel.grid(row=2,column=0,columnspan=2)
+        goBackButton = ctk.CTkButton(self.resignFrame, text="Cancel",command=lambda: self.goBackFromResign())
+        goBackButton.grid(row=3,column=0,sticky="e")
+        confirmResignation = ctk.CTkButton(self.resignFrame, text="Confirm resignation", command=lambda: self.confirmResignation(self.parent.account.Id, self.myDepositId))
+        confirmResignation.grid(row=3,column=1,sticky="w")
 
         #savings deposits offers frame
         self.depositOffers = ctk.CTkFrame(self, fg_color="transparent")
@@ -58,9 +78,7 @@ class SavingsDepositsWidgets(ctk.CTkFrame):
         myDepositOffers=getSavingsDepositOffers()
         takenIdList = getSavingsDepositTakenIds(self.parent.account.Id)
         takenIdList.sort()
-        print(takenIdList)
         allIdList = getSavingsDepositOffersIds()
-        print(allIdList)
         for i,offer in enumerate(myDepositOffers, start=1):
             if(takenIdList == allIdList):
                 infoLabel = ctk.CTkLabel(self.depositOffers, text="Unfortunately we do not have deposit offer available for you",font=("Arial",20))
@@ -162,7 +180,16 @@ class SavingsDepositsWidgets(ctk.CTkFrame):
                 self.statusLabel.configure(text="You have to enter a number")
         self.updateProcessId = self.after(1000, self.update)
 
-
+    def updateExchangeLabel(self, amount, fromCurrency):
+        host = 'api.frankfurter.app'
+        self.myDepositStatusLabel.configure(text="")
+        try:
+            self.myDepositStatusLabel.configure(text="")
+            response = requests.get(f'https://{host}/latest?amount={amount}&from={fromCurrency}&to=PLN')
+            self.myDepositStatusLabel.configure(text=str(response.json()['rates'][f'PLN']) + " " + f'PLN')
+        except requests.ConnectionError:
+            self.statusLabel.configure(text="Connection error")
+        self.updateExhangeProcessId = self.after(100000, lambda: self.updateExchangeLabel(amount,fromCurrency))
 
     def goBackFromConfirmation(self):
         self.amountEntry.delete(0, ctk.END)
@@ -172,7 +199,6 @@ class SavingsDepositsWidgets(ctk.CTkFrame):
         self.confirmOffer.pack_forget()
         self.mainFrame.pack()
         self.after_cancel(self.updateProcessId)
-
 
 
     def acceptOffer(self, offerId, amount, exchangedAmount):
@@ -186,3 +212,24 @@ class SavingsDepositsWidgets(ctk.CTkFrame):
 
     def setId(self, newId):
         self.offerId = newId
+
+    def resign(self, text, depositId, amount, fromCurrency):
+        self.myDeposit = text
+        self.myDepositId = depositId
+        self.myDepositLabel.configure(text=self.myDeposit)
+        self.myDeposits.pack_forget()
+        self.updateExchangeLabel(amount, fromCurrency)
+        self.resignFrame.pack()
+
+    # stop updating process 
+    def goBackFromResign(self):
+        self.after_cancel(self.updateExhangeProcessId)
+        self.resignFrame.pack_forget()
+        self.myDeposits.pack()
+
+
+    def confirmResignation(self, accountId, depositId):
+        # get exchanged value and add it to balance in db, then refresh account 
+        print(accountId)
+        print(depositId)
+        self.after_cancel(self.updateExhangeProcessId)
