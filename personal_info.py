@@ -67,7 +67,7 @@ class PersonalInfoWidgets(ctk.CTkFrame):
     def SaveChanges(self):
         hashed_passwd = hashlib.sha256(self.passwordEntry.get().encode()).hexdigest()
         username = self.parent.account.Username
-        email = self.parent.account.Username
+        email = self.parent.account.Email
 
         if(Login(username,hashed_passwd)== None):
             print(self.parent.account.Username+self.parent.account.Email)
@@ -75,7 +75,10 @@ class PersonalInfoWidgets(ctk.CTkFrame):
             self.passwordEntry.delete(0, ctk.END)
             return
 
-        if(IfLoginExists(self.usernameEntry.get())):
+        if(self.usernameEntry.get() == self.parent.account.Username and self.emailEntry.get() == email):
+            return
+
+        if(IfLoginExists(self.usernameEntry.get()) and self.usernameEntry.get()!=username):
             self.statusLabel.configure(text="This username is already taken",text_color="#ff6633")
             self.passwordEntry.delete(0, ctk.END)
             return
