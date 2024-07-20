@@ -3,7 +3,7 @@ import customtkinter as ctk
 from account import Account
 from fund_transfer import TransferWidgets
 from transfer_history import TransferHistoryWidgets
-from db_service import GetData, GetTransferHistory
+from db_service import GetData, GetTransferHistory, GetBalance
 from account_widgets import AccountWidgets
 from savings_deposits import SavingsDepositsWidgets
 
@@ -30,7 +30,8 @@ class MainWidgets(ctk.CTkFrame):
                                            text="Savings Deposits"
                                            ,command=self.savingsDeposits)
 
-        self.update()
+        self.updateBalance()
+        self.updateTime()
         self.timeLabel.pack(anchor="ne")
         self.balanceLabel.pack(anchor="s", expand=True)
         self.currencyLabel.pack(anchor="n", expand=True)
@@ -58,10 +59,16 @@ class MainWidgets(ctk.CTkFrame):
         self.mainFrame.pack(side=ctk.LEFT,fill=ctk.BOTH, expand=True)
         self.pack(fill=ctk.BOTH, expand=True)
 
-    def update(self):
+    def updateTime(self):
         time_str = time.strftime("%H:%M:%S   %d-%m-%Y")
         self.timeLabel.configure(text=time_str)
-        self.timeLabel.after(1000,self.update)
+        self.timeLabel.after(1000,self.updateTime)
+
+    def updateBalance(self):
+        self.account.UpdateBalance()
+        self.balanceLabel.configure(text="{:.2f}".format(self.account.Balance))
+        self.updatingBalance = self.balanceLabel.after(10000,self.updateBalance)
+    
 
     def fundTransfer(self):
         self.pack_forget()
@@ -86,6 +93,10 @@ class MainWidgets(ctk.CTkFrame):
     def logOut(self):
         del self.account
         self.pack_forget()
+        for widget in self.winfo_children():
+            widget.pack_forget()
+            widget.destroy()
+        self.after_cancel(self.updatingBalance)
         self.master.createWelcomWingets()
 
     def savingsDeposits(self):

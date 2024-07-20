@@ -1,4 +1,4 @@
-from db_service import UpdateData
+from db_service import UpdateData,GetBalance
 class Account:
 
     def __init__(self, accountId, username, firstName, lastName, email, birthDate, balance, startBonus, lastLogin, bankAccNum):
@@ -103,3 +103,6 @@ class Account:
         self.__email = data_list[1]
         self.__balance = data_list[2]
 
+    def UpdateBalance(self):
+        data = GetBalance(self.Id)
+        self.__balance = data[0]
