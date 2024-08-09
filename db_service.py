@@ -326,3 +326,25 @@ def GetBalance(accountId):
         quit()
     finally:
         dbcon.close()
+
+def CheckSavings(accountId):
+    # to do: checking date of end of deposits and transfer exchanged money to main deposit in PLN
+    try:
+        dbcon = mysql.connector.connect(
+        host="localhost",
+        user="root",
+        passwd="",
+        buffered=True)
+        mycursor = dbcon.cursor()
+        mycursor.execute("USE BankingAppDB;")
+        mycursor.execute("SELECT * FROM SAVINGS_DEPOSITS\
+                     WHERE ACCOUNT_ID = %s", (accountId,))
+        myDeposits = mycursor.fetchall()
+        print(myDeposits)
+        mycursor.close()
+        return myDeposits
+    except mysql.connector.Error:
+        print("Error: " + str(mysql.connector.Error))
+        quit()
+    finally:
+        dbcon.close()

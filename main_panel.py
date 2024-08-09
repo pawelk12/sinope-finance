@@ -3,7 +3,7 @@ import customtkinter as ctk
 from account import Account
 from fund_transfer import TransferWidgets
 from transfer_history import TransferHistoryWidgets
-from db_service import GetData, GetTransferHistory, GetBalance
+from db_service import GetData, GetTransferHistory, CheckSavings
 from account_widgets import AccountWidgets
 from savings_deposits import SavingsDepositsWidgets
 
@@ -31,6 +31,7 @@ class MainWidgets(ctk.CTkFrame):
                                            ,command=self.savingsDeposits)
 
         self.updateBalance()
+        self.checkSavings()
         self.updateTime()
         self.timeLabel.pack(anchor="ne")
         self.balanceLabel.pack(anchor="s", expand=True)
@@ -63,6 +64,11 @@ class MainWidgets(ctk.CTkFrame):
         time_str = time.strftime("%H:%M:%S   %d-%m-%Y")
         self.timeLabel.configure(text=time_str)
         self.timeLabel.after(1000,self.updateTime)
+
+    def checkSavings(self):
+        CheckSavings(self.account.Id)
+        # check savings and update balance
+        self.checkingDeposits = self.after(1000,self.checkSavings)
 
     def updateBalance(self):
         self.account.UpdateBalance()
