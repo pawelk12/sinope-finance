@@ -78,15 +78,18 @@ class MainWidgets(ctk.CTkFrame):
 
     def fundTransfer(self):
         self.pack_forget()
+        self.transition()
         transferFrame = TransferWidgets(self.master, self)
 
     def transferHistory(self):
         self.pack_forget()
+        self.transition()
         history = GetTransferHistory(self.account.BankAccNum) #list of tuples
         transferHistoryFrame = TransferHistoryWidgets(self.master, self, history)
 
     def accountWidgets(self):
         self.pack_forget()
+        self.transition()
         accountFrame = AccountWidgets(self.master, self)
 
     def createAccount(self, accountId):
@@ -99,12 +102,17 @@ class MainWidgets(ctk.CTkFrame):
     def logOut(self):
         del self.account
         self.pack_forget()
-        for widget in self.winfo_children():
-            widget.pack_forget()
-            widget.destroy()
-        self.after_cancel(self.updatingBalance)
+        self.transition()
         self.master.createWelcomWingets()
 
     def savingsDeposits(self):
         self.pack_forget()
+        self.transition()
         savingsDepositsFrame = SavingsDepositsWidgets(self.master, self)
+
+    def transition(self):
+        for widget in self.winfo_children():
+            widget.pack_forget()
+            widget.destroy()
+        self.after_cancel(self.updatingBalance)
+        self.after_cancel(self.checkingDeposits)
