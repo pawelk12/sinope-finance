@@ -68,7 +68,7 @@ class MainWidgets(ctk.CTkFrame):
     def checkSavings(self):
         CheckSavings(self.account.Id)
         # check savings and update balance
-        self.checkingDeposits = self.after(1000,self.checkSavings)
+        self.checkingDeposits = self.after(1000000,self.checkSavings)
 
     def updateBalance(self):
         self.account.UpdateBalance()

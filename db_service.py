@@ -1,5 +1,6 @@
 import mysql.connector
 import datetime
+import requests
 
 
 try:
@@ -340,7 +341,40 @@ def CheckSavings(accountId):
         mycursor.execute("SELECT * FROM SAVINGS_DEPOSITS\
                      WHERE ACCOUNT_ID = %s", (accountId,))
         myDeposits = mycursor.fetchall()
-        print(myDeposits)
+        for deposit in myDeposits:
+            if deposit[4].date()<= datetime.date.today():
+                #getting currency from deposit offer
+                offerId = deposit[2]
+                cursor = dbcon.cursor()
+                cursor.execute("SELECT CURRENCY, INTEREST_RATE FROM DEPOSIT_OFFERS\
+                               WHERE ID = %s", (offerId,))
+                data = cursor.fetchall()[0]
+                currency = data[0]
+                interestRate = data[1]/100 + 1
+                cursor.close()
+                # currency, amount, saving depositId
+                # + interest rate
+                depositId = deposit[0]
+                amountToExchangeToPLN = round(deposit[3]*interestRate,2)
+
+                #exchange
+                exchangedAmount = None
+                host = 'api.frankfurter.app'
+                try:    
+                    response = requests.get(f'https://{host}/latest?amount={amountToExchangeToPLN}&from={currency}&to=PLN')
+                    exchangedAmount = float(response.json()['rates'][f'PLN'])
+                except requests.ConnectionError:
+                    print("Connection error")
+                # delete saving deposit and transfer money
+                if exchangedAmount != None:
+                    mycursor.execute("DELETE FROM SAVINGS_DEPOSITS\
+                                     WHERE ID = %s", (depositId,))
+                    dbcon.commit()
+                    # transfer PLN to main deposit
+                    mycursor.execute(("UPDATE ACCOUNTS\
+                    SET BALANCE = BALANCE + %s\
+                    WHERE ID = %s"),(exchangedAmount, accountId))
+                    dbcon.commit()
         mycursor.close()
         return myDeposits
     except mysql.connector.Error:
