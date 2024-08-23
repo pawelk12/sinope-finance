@@ -254,14 +254,27 @@ def getSavingsDepositOffers():
     mycursor.close()
     return depositOffers
 
-def getSavingsDepositTakenIds(accountId): #ids of offers that have been taken
-    mycursor = db.cursor()
-    mycursor.execute("SELECT DISTINCT OFFER_ID FROM SAVINGS_DEPOSITS\
+
+def getSavingsDepositTakenIds(accountId):
+    try:
+        dbcon = mysql.connector.connect(
+        host="localhost",
+        user="root",
+        passwd="",
+        buffered=True)
+        mycursor = dbcon.cursor()
+        mycursor.execute("USE BankingAppDB;")
+        mycursor.execute("SELECT DISTINCT OFFER_ID FROM SAVINGS_DEPOSITS\
                      WHERE ACCOUNT_ID = %s", (accountId,))
-    ids = mycursor.fetchall()
-    idList = [element[0] for element in ids]
-    mycursor.close()
-    return idList
+        ids = mycursor.fetchall()
+        idList = [element[0] for element in ids]
+        mycursor.close()
+        return idList
+    except mysql.connector.Error:
+        print("Error: " + str(mysql.connector.Error))
+        quit()
+    finally:
+        dbcon.close()
 
 def getSavingsDepositOffersIds():
     mycursor = db.cursor()
@@ -290,14 +303,27 @@ def acceptSavingDeposit(accountId, offerId, amount, exchangedAmount):
     db.commit()
     mycursor.close()
 
+
 def getMySavingsDeposits(accountId):
-    mycursor = db.cursor()
-    mycursor.execute("SELECT OFFER_ID, AMOUNT, END_DATE\
+    try:
+        con = mysql.connector.connect(
+        host="localhost",
+        user="root",
+        passwd="",
+        buffered=True)
+        mycursor = con.cursor()
+        mycursor.execute("USE BankingAppDB;")
+        mycursor.execute("SELECT OFFER_ID, AMOUNT, END_DATE\
                      FROM SAVINGS_DEPOSITS\
                      WHERE ACCOUNT_ID = %s", (accountId,))
-    output = mycursor.fetchall()
-    mycursor.close()
-    return output
+        output = mycursor.fetchall()
+        mycursor.close()
+        return output
+    except mysql.connector.Error:
+        print("Error: " + str(mysql.connector.Error))
+        quit()
+    finally:
+        con.close()
 
 def getCurrencyOfMyOffers(offerId):
     mycursor = db.cursor()
@@ -329,7 +355,6 @@ def GetBalance(accountId):
         dbcon.close()
 
 def CheckSavings(accountId):
-    # to do: checking date of end of deposits and transfer exchanged money to main deposit in PLN
     try:
         dbcon = mysql.connector.connect(
         host="localhost",
@@ -377,6 +402,29 @@ def CheckSavings(accountId):
                     dbcon.commit()
         mycursor.close()
         return myDeposits
+    except mysql.connector.Error:
+        print("Error: " + str(mysql.connector.Error))
+        quit()
+    finally:
+        dbcon.close()
+
+
+def ResignDeposit(accountId, depositId, amount):
+    try:
+        dbcon = mysql.connector.connect(
+        host="localhost",
+        user="root",
+        passwd="",
+        buffered=True)
+        mycursor = dbcon.cursor()
+        mycursor.execute("USE BankingAppDB;")
+        mycursor.execute("DELETE FROM SAVINGS_DEPOSITS\
+                            WHERE ACCOUNT_ID = %s AND OFFER_ID = %s", (accountId, depositId))
+        mycursor.execute(("UPDATE ACCOUNTS\
+                    SET BALANCE = BALANCE + %s\
+                    WHERE ID = %s"),(amount, accountId))
+        dbcon.commit()
+        mycursor.close()
     except mysql.connector.Error:
         print("Error: " + str(mysql.connector.Error))
         quit()

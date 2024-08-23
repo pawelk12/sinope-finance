@@ -1,6 +1,6 @@
 import customtkinter as ctk
 from db_service import getSavingsDepositOffers, getSavingsDepositOffersIds, acceptSavingDeposit, getSavingsDepositTakenIds,\
-getMySavingsDeposits, getCurrencyOfMyOffers
+getMySavingsDeposits, getCurrencyOfMyOffers, ResignDeposit
 import requests
 
 class SavingsDepositsWidgets(ctk.CTkFrame):
@@ -33,9 +33,9 @@ class SavingsDepositsWidgets(ctk.CTkFrame):
         titleLabel = ctk.CTkLabel(self.myDeposits, text="My active deposits",font=("Arial",20))
         titleLabel.grid(row=1,column=0,columnspan=2,padx=20)
         #get my savings deposits from db
-        mySavingsDeposits = getMySavingsDeposits(self.parent.account.Id)
-        if mySavingsDeposits:
-            for i,deposit in enumerate(mySavingsDeposits, start=1):
+        self.mySavingsDeposits = getMySavingsDeposits(self.parent.account.Id)
+        if self.mySavingsDeposits:
+            for i,deposit in enumerate(self.mySavingsDeposits, start=1):
                 curr = str(getCurrencyOfMyOffers(deposit[0])[0])
                 text = str(deposit) +" "+curr
                 myDepositId = deposit[0]
@@ -187,6 +187,7 @@ class SavingsDepositsWidgets(ctk.CTkFrame):
             self.myDepositStatusLabel.configure(text="")
             response = requests.get(f'https://{host}/latest?amount={amount}&from={fromCurrency}&to=PLN')
             self.myDepositStatusLabel.configure(text=str(response.json()['rates'][f'PLN']) + " " + f'PLN')
+            self.exchangedAmountPLN = float(response.json()['rates'][f'PLN'])
         except requests.ConnectionError:
             self.statusLabel.configure(text="Connection error")
         self.updateExhangeProcessId = self.after(100000, lambda: self.updateExchangeLabel(amount,fromCurrency))
@@ -230,6 +231,9 @@ class SavingsDepositsWidgets(ctk.CTkFrame):
 
     def confirmResignation(self, accountId, depositId):
         # get exchanged value and add it to balance in db, then refresh account 
-        print(accountId)
-        print(depositId)
+        ResignDeposit(accountId, depositId, self.exchangedAmountPLN)
+        self.resignFrame.pack_forget()
+        self.myDeposits.destroy()
+        self.parent.account.Update()
+        self.goBackHome()
         self.after_cancel(self.updateExhangeProcessId)
