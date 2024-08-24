@@ -23,7 +23,6 @@ class WelcomeWidgets(ctk.CTkFrame):
 
         loginButton = ctk.CTkButton(self.buttonFrame,
                                     text="Login",
-                                    font=("Helvetica",13),
                                     fg_color="transparent",
                                     corner_radius=30,
                                     border_width=2,
@@ -34,7 +33,6 @@ class WelcomeWidgets(ctk.CTkFrame):
         
         registerButton = ctk.CTkButton(self.buttonFrame, 
                                        text="Register",
-                                       font=("Helvetica",13),
                                        fg_color="transparent",
                                        corner_radius=30,
                                        border_width=2,

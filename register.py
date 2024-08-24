@@ -77,7 +77,6 @@ class RegisterWidgets(ctk.CTkFrame):
 
         registerButton = ctk.CTkButton(self,
                                     text="Register",
-                                    font=("Helvetica",13),
                                     fg_color="transparent",
                                     corner_radius=30,
                                     border_width=2,

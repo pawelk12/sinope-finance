@@ -2,6 +2,7 @@ import customtkinter as ctk
 from db_service import getSavingsDepositOffers, getSavingsDepositOffersIds, acceptSavingDeposit, getSavingsDepositTakenIds,\
 getMySavingsDeposits, getCurrencyOfMyOffers, ResignDeposit
 import requests
+from tkinter import PhotoImage
 
 class SavingsDepositsWidgets(ctk.CTkFrame):
     def __init__(self,master, mainframe):
@@ -14,17 +15,54 @@ class SavingsDepositsWidgets(ctk.CTkFrame):
 
         #mainframe
         self.mainFrame = ctk.CTkFrame(self, fg_color="transparent")
-        goBackButton = ctk.CTkButton(self.mainFrame, text="<-Back to Home",command=self.goBackHome)
-        goBackButton.grid(row=0,column=0,sticky="w")
 
-        titleLabel = ctk.CTkLabel(self.mainFrame, text="Savings Deposits in USD, CHF or EUR",font=("Arial",20))
-        titleLabel.grid(row=1,column=0,columnspan=2,padx=20)
+        pathToArrow = "resources/arrowLeft.png"
+        arrowImage = PhotoImage(file=pathToArrow)
 
-        myDepositsButton = ctk.CTkButton(self.mainFrame, text="show your deposits",command=self.showMyDeposits)
-        myDepositsButton.grid(row=2,column=0,columnspan=2)
+        goBackButton = ctk.CTkButton(self.mainFrame,
+                                    text="Home   ",
+                                    image=arrowImage,
+                                    fg_color="transparent",
+                                    corner_radius=30,
+                                    border_width=2,
+                                    border_spacing=6,
+                                    border_color="#3d9bd7",
+                                    command=self.goBackHome)
+        goBackButton.pack(anchor="nw",pady=3)
 
-        depositsOffersButton = ctk.CTkButton(self.mainFrame, text="show available offers",command=self.showDepositOffers)
-        depositsOffersButton.grid(row=2,column=1,columnspan=2)
+        titleLabel = ctk.CTkLabel(self.mainFrame, text="Savings Deposits",font=("Arial",32))
+        titleLabel.pack(anchor="n",pady=20)
+
+        self.mainFrameButtons = ctk.CTkFrame(self.mainFrame, fg_color="transparent")
+
+
+        myDepositsButton = ctk.CTkButton(self.mainFrameButtons,
+                                        text="  My Savings Deposits  ",
+                                        fg_color="transparent",
+                                        corner_radius=30,
+                                        border_width=2,
+                                        border_spacing=6,
+                                        border_color="#3d9bd7",
+                                        command=self.showMyDeposits)
+        myDepositsButton.pack(side=ctk.LEFT,expand=True,anchor="ne",padx=20)
+
+        depositsOffersButton = ctk.CTkButton(self.mainFrameButtons,
+                                        text="Available Savings Offers",
+                                        fg_color="transparent",
+                                        corner_radius=30,
+                                        border_width=2,
+                                        border_spacing=6,
+                                        border_color="#3d9bd7",
+                                        command=self.showDepositOffers)
+        depositsOffersButton.pack(side=ctk.LEFT,expand=True,anchor="nw",padx=20)
+        self.mainFrameButtons.pack()
+
+        pathToDepositsPicture = "resources/deposits/mainframe.png"
+        depositsImage = PhotoImage(file=pathToDepositsPicture)
+
+        pictureLabel = ctk.CTkLabel(self.mainFrame, text="",image=depositsImage)
+        pictureLabel.pack(side=ctk.BOTTOM,expand=True)
+
 
         #my savings deposits frame
         self.myDeposits = ctk.CTkFrame(self, fg_color="transparent")
@@ -117,8 +155,10 @@ class SavingsDepositsWidgets(ctk.CTkFrame):
 
 
         #packing stuff
-        self.mainFrame.pack()
-        self.pack(expand = True,fill=ctk.BOTH)
+        #self.mainFrame.pack(expand = True,fill=ctk.BOTH)
+        self.mainFrame.pack(fill=ctk.BOTH, expand=True)
+        #self.pack(expand = True,fill=ctk.BOTH)
+        self.pack(fill=ctk.BOTH, expand=True)
 
     def goBackHome(self):
         self.pack_forget()
