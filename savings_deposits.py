@@ -66,13 +66,24 @@ class SavingsDepositsWidgets(ctk.CTkFrame):
 
         #my savings deposits frame
         self.myDeposits = ctk.CTkFrame(self, fg_color="transparent")
-        goBackButton = ctk.CTkButton(self.myDeposits, text="<-Back",command=lambda: self.goBack(self.myDeposits))
-        goBackButton.grid(row=0,column=0,sticky="w")
-        titleLabel = ctk.CTkLabel(self.myDeposits, text="My active deposits",font=("Arial",20))
-        titleLabel.grid(row=1,column=0,columnspan=2,padx=20)
+        goBackButton = ctk.CTkButton(self.myDeposits,
+                                    text="Back   ",
+                                    image=arrowImage,
+                                    fg_color="transparent",
+                                    corner_radius=30,
+                                    border_width=2,
+                                    border_spacing=6,
+                                    border_color="#3d9bd7",
+                                    command=lambda: self.goBack(self.myDeposits))
+        #goBackButton.grid(row=0,column=0,sticky="w",pady=3)
+        goBackButton.grid(row=0,column=0,pady=3,sticky="w")
+
+        titleLabel = ctk.CTkLabel(self.myDeposits, text="Active Deposits",font=("Arial",32))
+        titleLabel.grid(row=1,column=0,columnspan=2,pady=20)
         #get my savings deposits from db
         self.mySavingsDeposits = getMySavingsDeposits(self.parent.account.Id)
         if self.mySavingsDeposits:
+            #make new grid in the new frame i guess
             for i,deposit in enumerate(self.mySavingsDeposits, start=1):
                 curr = str(getCurrencyOfMyOffers(deposit[0])[0])
                 text = str(deposit) +" "+curr
@@ -87,9 +98,12 @@ class SavingsDepositsWidgets(ctk.CTkFrame):
                                             currency = curr:self.resign(mydeposit,depositId,amount,currency))
                 resignButton.grid(row=i+1,column=1)
         else:
-            infoLabel = ctk.CTkLabel(self.myDeposits, text="You do not have any savings deposits",font=("Arial",20))
-            infoLabel.grid(row=2,column=0)
-        
+            infoLabel = ctk.CTkLabel(self.myDeposits, text="You currently do not have any funds placed in savings deposits.\nYou can explore our offers in the adjacent tab."
+                                     ,font=("Arial",20))
+            infoLabel.grid(row=2,column=0,columnspan=2)
+        self.myDeposits.grid_columnconfigure(0, weight=1)
+        self.myDeposits.grid_columnconfigure(1, weight=1)
+
         # confirm resignation frame
         self.resignFrame = ctk.CTkFrame(self, fg_color="transparent")
         self.myDepositLabel = ctk.CTkLabel(self.resignFrame, text=self.myDeposit,font=("Arial",20))
@@ -166,7 +180,7 @@ class SavingsDepositsWidgets(ctk.CTkFrame):
 
     def showMyDeposits(self):
         self.mainFrame.pack_forget()
-        self.myDeposits.pack()
+        self.myDeposits.pack(fill=ctk.BOTH, expand=True)
 
     def showDepositOffers(self):
         self.mainFrame.pack_forget()
