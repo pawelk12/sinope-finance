@@ -82,9 +82,9 @@ class SavingsDepositsWidgets(ctk.CTkFrame):
         titleLabel.grid(row=1,column=0,columnspan=2,pady=20)
         #get my savings deposits from db
         self.mySavingsDeposits = getMySavingsDeposits(self.parent.account.Id)
-        if self.mySavingsDeposits:
+        '''if self.mySavingsDeposits:
             #make new grid in the new frame i guess
-            for i,deposit in enumerate(self.mySavingsDeposits, start=1):
+                for i,deposit in enumerate(self.mySavingsDeposits, start=1):
                 curr = str(getCurrencyOfMyOffers(deposit[0])[0])
                 text = str(deposit) +" "+curr
                 myDepositId = deposit[0]
@@ -100,7 +100,40 @@ class SavingsDepositsWidgets(ctk.CTkFrame):
         else:
             infoLabel = ctk.CTkLabel(self.myDeposits, text="You currently do not have any funds placed in savings deposits.\nYou can explore our offers in the adjacent tab."
                                      ,font=("Arial",20))
+            infoLabel.grid(row=2,column=0,columnspan=2)'''
+        if self.mySavingsDeposits:
+            self.myDepositsInfoFrame = ctk.CTkFrame(self.myDeposits, fg_color="transparent")
+            endingDateLabel= ctk.CTkLabel(self.myDepositsInfoFrame, text="End Date",font=("Arial",20))
+            amountLabel= ctk.CTkLabel(self.myDepositsInfoFrame, text="Amount",font=("Arial",20))
+            interestRate=ctk.CTkLabel(self.myDepositsInfoFrame, text="Interest Rate",font=("Arial",20))
+            interestCap=ctk.CTkLabel(self.myDepositsInfoFrame, text="Interest Capitalization",font=("Arial",20))
+            endingDateLabel.grid(row=0,column=0,padx=15)
+            amountLabel.grid(row=0,column=1,padx=15)
+            interestRate.grid(row=0,column=2,padx=15)
+            interestCap.grid(row=0,column=3,padx=15)
+
+
+            for i,deposit in enumerate(self.mySavingsDeposits, start=1):
+                curr = str(getCurrencyOfMyOffers(deposit[0])[0])
+                text = str(deposit[1]) +" "+curr
+                myDepositId = deposit[0]
+                amount = deposit[1]
+                depositAmountLabel = ctk.CTkLabel(self.myDepositsInfoFrame, text=text,font=("Arial",20))
+                depositAmountLabel.grid(row=i,column=1)
+                resignButton = ctk.CTkButton(self.myDepositsInfoFrame,text="resign",
+                                            command = lambda mydeposit = text,
+                                            depositId = myDepositId,
+                                            amount = amount,
+                                            currency = curr:self.resign(mydeposit,depositId,amount,currency))
+                resignButton.grid(row=i,column=5)
+                self.myDepositsInfoFrame.grid(row=2,column=0,columnspan=2)
+        else:
+            infoLabel = ctk.CTkLabel(self.myDeposits, text="You currently do not have any funds placed in savings deposits.\nYou can explore our offers in the adjacent tab."
+                                     ,font=("Arial",20))
             infoLabel.grid(row=2,column=0,columnspan=2)
+
+
+
         self.myDeposits.grid_columnconfigure(0, weight=1)
         self.myDeposits.grid_columnconfigure(1, weight=1)
 
@@ -108,7 +141,7 @@ class SavingsDepositsWidgets(ctk.CTkFrame):
         self.resignFrame = ctk.CTkFrame(self, fg_color="transparent")
         self.myDepositLabel = ctk.CTkLabel(self.resignFrame, text=self.myDeposit,font=("Arial",20))
         self.myDepositLabel.grid(row=0,column=0, columnspan = 2)
-        confirmationLabel = ctk.CTkLabel(self.resignFrame, text="Are you sure you want to cancel the deposit? Early cancellation will result in the loss of interest.",
+        confirmationLabel = ctk.CTkLabel(self.resignFrame, text="Are you sure you want to cancel the deposit? Early cancellation will result in the loss of interest.+fee 1%",
                                          font=("Arial",20))
         confirmationLabel.grid(row=1,column=0,columnspan = 2)
         self.myDepositStatusLabel = ctk.CTkLabel(self.resignFrame, text="",font=("Arial",20))
@@ -213,7 +246,7 @@ class SavingsDepositsWidgets(ctk.CTkFrame):
                      float(self.amountEntry.get())<=self.parent.account.Balance):
                 self.statusLabel.configure(text="")
                 response = requests.get(f'https://{host}/latest?amount={float(self.amountEntry.get())}&from=PLN&to={to}')
-                self.exchangeRate.configure(text=str(response.json()['rates'][f'{to}']) + " " + f'{to}')
+                self.exchangeRate.configure(text=str(float(response.json()['rates'][f'{to}'])) + " " + f'{to}')
                 mysqlOfferId=self.offerId
                 self.acceptOfferButton.configure(command=lambda:self.acceptOffer(mysqlOfferId,float(self.amountEntry.get()),
                                                                           response.json()['rates'][f'{to}']))
@@ -240,8 +273,10 @@ class SavingsDepositsWidgets(ctk.CTkFrame):
         try:
             self.myDepositStatusLabel.configure(text="")
             response = requests.get(f'https://{host}/latest?amount={amount}&from={fromCurrency}&to=PLN')
-            self.myDepositStatusLabel.configure(text=str(response.json()['rates'][f'PLN']) + " " + f'PLN')
-            self.exchangedAmountPLN = float(response.json()['rates'][f'PLN'])
+            amount=float(response.json()['rates'][f'PLN'])
+            exchangedAmountAfterFee=amount*0.99
+            self.myDepositStatusLabel.configure(text=str(exchangedAmountAfterFee) + " " + f'PLN')
+            self.exchangedAmountPLN = exchangedAmountAfterFee
         except requests.ConnectionError:
             self.statusLabel.configure(text="Connection error")
         self.updateExhangeProcessId = self.after(100000, lambda: self.updateExchangeLabel(amount,fromCurrency))
@@ -258,6 +293,7 @@ class SavingsDepositsWidgets(ctk.CTkFrame):
 
     def acceptOffer(self, offerId, amount, exchangedAmount):
         acceptSavingDeposit(self.parent.account.Id, offerId, amount, exchangedAmount)
+        self.after_cancel(self.updateProcessId)
         self.parent.account.Update()
         self.goBackHome()
 
