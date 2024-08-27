@@ -1,6 +1,6 @@
 import customtkinter as ctk
 from db_service import getSavingsDepositOffers, getSavingsDepositOffersIds, acceptSavingDeposit, getSavingsDepositTakenIds,\
-getMySavingsDeposits, getCurrencyOfMyOffers, ResignDeposit
+getMySavingsDeposits, getInfoOfMyOffers, ResignDeposit
 import requests
 from tkinter import PhotoImage
 
@@ -82,57 +82,55 @@ class SavingsDepositsWidgets(ctk.CTkFrame):
         titleLabel.grid(row=1,column=0,columnspan=2,pady=20)
         #get my savings deposits from db
         self.mySavingsDeposits = getMySavingsDeposits(self.parent.account.Id)
-        '''if self.mySavingsDeposits:
-            #make new grid in the new frame i guess
-                for i,deposit in enumerate(self.mySavingsDeposits, start=1):
-                curr = str(getCurrencyOfMyOffers(deposit[0])[0])
-                text = str(deposit) +" "+curr
-                myDepositId = deposit[0]
-                amount = deposit[1]
-                depositLabel = ctk.CTkLabel(self.myDeposits, text=text,font=("Arial",20))
-                depositLabel.grid(row=i+1,column=0)
-                resignButton = ctk.CTkButton(self.myDeposits,text="resign",
-                                            command = lambda mydeposit = text,
-                                            depositId = myDepositId,
-                                            amount = amount,
-                                            currency = curr:self.resign(mydeposit,depositId,amount,currency))
-                resignButton.grid(row=i+1,column=1)
-        else:
-            infoLabel = ctk.CTkLabel(self.myDeposits, text="You currently do not have any funds placed in savings deposits.\nYou can explore our offers in the adjacent tab."
-                                     ,font=("Arial",20))
-            infoLabel.grid(row=2,column=0,columnspan=2)'''
         if self.mySavingsDeposits:
             self.myDepositsInfoFrame = ctk.CTkFrame(self.myDeposits, fg_color="transparent")
-            endingDateLabel= ctk.CTkLabel(self.myDepositsInfoFrame, text="End Date",font=("Arial",20))
-            amountLabel= ctk.CTkLabel(self.myDepositsInfoFrame, text="Amount",font=("Arial",20))
-            interestRate=ctk.CTkLabel(self.myDepositsInfoFrame, text="Interest Rate",font=("Arial",20))
-            interestCap=ctk.CTkLabel(self.myDepositsInfoFrame, text="Interest Capitalization",font=("Arial",20))
-            endingDateLabel.grid(row=0,column=0,padx=15)
-            amountLabel.grid(row=0,column=1,padx=15)
-            interestRate.grid(row=0,column=2,padx=15)
-            interestCap.grid(row=0,column=3,padx=15)
-
+            endingDateLabel= ctk.CTkLabel(self.myDepositsInfoFrame, text="End Date",font=("Arial",24))
+            amountLabel= ctk.CTkLabel(self.myDepositsInfoFrame, text="Amount",font=("Arial",24))
+            interestRate=ctk.CTkLabel(self.myDepositsInfoFrame, text="Interest Rate",font=("Arial",24))
+            interestCap=ctk.CTkLabel(self.myDepositsInfoFrame, text="Interest Capitalization",font=("Arial",24))
+            endingDateLabel.grid(row=0,column=0,padx=15,pady=10)
+            amountLabel.grid(row=0,column=1,padx=15,pady=10)
+            interestRate.grid(row=0,column=2,padx=15,pady=10)
+            interestCap.grid(row=0,column=3,padx=15,pady=10)
 
             for i,deposit in enumerate(self.mySavingsDeposits, start=1):
-                curr = str(getCurrencyOfMyOffers(deposit[0])[0])
+                currDeposit=getInfoOfMyOffers(deposit[0])[0]
+                curr = str(getInfoOfMyOffers(deposit[0])[0][1])
                 text = str(deposit[1]) +" "+curr
                 myDepositId = deposit[0]
                 amount = deposit[1]
                 depositAmountLabel = ctk.CTkLabel(self.myDepositsInfoFrame, text=text,font=("Arial",20))
-                depositAmountLabel.grid(row=i,column=1)
-                resignButton = ctk.CTkButton(self.myDepositsInfoFrame,text="resign",
+                depositAmountLabel.grid(row=i,column=1,pady=5)
+
+                endDate=deposit[2].date()
+                depositEndingDateLabel = ctk.CTkLabel(self.myDepositsInfoFrame, text=endDate,font=("Arial",20))
+                depositEndingDateLabel.grid(row=i,column=0,pady=1)
+
+                interestRate= str(currDeposit[5]) + "% " + str(currDeposit[6])
+                depositInterestRateLabel = ctk.CTkLabel(self.myDepositsInfoFrame, text=interestRate,font=("Arial",20))
+                depositInterestRateLabel.grid(row=i,column=2,pady=1)
+
+                interestCapitalization = str(currDeposit[7])
+                depositInterestCapLabel = ctk.CTkLabel(self.myDepositsInfoFrame, text=interestCapitalization,font=("Arial",20))
+                depositInterestCapLabel.grid(row=i,column=3,pady=1)
+
+                resignButton = ctk.CTkButton(self.myDepositsInfoFrame,text="Resign",
+                                            fg_color="transparent",
+                                            corner_radius=30,
+                                            border_width=2,
+                                            border_spacing=6,
+                                            border_color="#ed460e",
+                                            hover_color="#632410",
                                             command = lambda mydeposit = text,
                                             depositId = myDepositId,
                                             amount = amount,
                                             currency = curr:self.resign(mydeposit,depositId,amount,currency))
-                resignButton.grid(row=i,column=5)
+                resignButton.grid(row=i,column=5,pady=1)
                 self.myDepositsInfoFrame.grid(row=2,column=0,columnspan=2)
         else:
             infoLabel = ctk.CTkLabel(self.myDeposits, text="You currently do not have any funds placed in savings deposits.\nYou can explore our offers in the adjacent tab."
                                      ,font=("Arial",20))
             infoLabel.grid(row=2,column=0,columnspan=2)
-
-
 
         self.myDeposits.grid_columnconfigure(0, weight=1)
         self.myDeposits.grid_columnconfigure(1, weight=1)
@@ -316,7 +314,7 @@ class SavingsDepositsWidgets(ctk.CTkFrame):
     def goBackFromResign(self):
         self.after_cancel(self.updateExhangeProcessId)
         self.resignFrame.pack_forget()
-        self.myDeposits.pack()
+        self.myDeposits.pack(fill=ctk.BOTH,expand=True)
 
 
     def confirmResignation(self, accountId, depositId):

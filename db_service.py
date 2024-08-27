@@ -315,7 +315,8 @@ def getMySavingsDeposits(accountId):
         mycursor.execute("USE BankingAppDB;")
         mycursor.execute("SELECT OFFER_ID, AMOUNT, END_DATE\
                      FROM SAVINGS_DEPOSITS\
-                     WHERE ACCOUNT_ID = %s", (accountId,))
+                     WHERE ACCOUNT_ID = %s\
+                     ORDER BY END_DATE", (accountId,))
         output = mycursor.fetchall()
         mycursor.close()
         return output
@@ -325,14 +326,14 @@ def getMySavingsDeposits(accountId):
     finally:
         con.close()
 
-def getCurrencyOfMyOffers(offerId):
+def getInfoOfMyOffers(offerId):
     mycursor = db.cursor()
-    mycursor.execute("SELECT CURRENCY\
+    mycursor.execute("SELECT *\
                      FROM DEPOSIT_OFFERS\
                      WHERE ID = %s", (offerId,))
-    currency = mycursor.fetchone()
+    data = mycursor.fetchall()
     mycursor.close()
-    return currency
+    return data
 
 def GetBalance(accountId):
     try:
