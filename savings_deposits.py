@@ -75,7 +75,7 @@ class SavingsDepositsWidgets(ctk.CTkFrame):
                                     border_spacing=6,
                                     border_color="#3d9bd7",
                                     command=lambda: self.goBack(self.myDeposits))
-        #goBackButton.grid(row=0,column=0,sticky="w",pady=3)
+
         goBackButton.grid(row=0,column=0,pady=3,sticky="w")
 
         titleLabel = ctk.CTkLabel(self.myDeposits, text="Active Deposits",font=("Arial",32))
@@ -84,10 +84,10 @@ class SavingsDepositsWidgets(ctk.CTkFrame):
         self.mySavingsDeposits = getMySavingsDeposits(self.parent.account.Id)
         if self.mySavingsDeposits:
             self.myDepositsInfoFrame = ctk.CTkFrame(self.myDeposits, fg_color="transparent")
-            endingDateLabel= ctk.CTkLabel(self.myDepositsInfoFrame, text="End Date",font=("Arial",24))
-            amountLabel= ctk.CTkLabel(self.myDepositsInfoFrame, text="Amount",font=("Arial",24))
-            interestRate=ctk.CTkLabel(self.myDepositsInfoFrame, text="Interest Rate",font=("Arial",24))
-            interestCap=ctk.CTkLabel(self.myDepositsInfoFrame, text="Interest Capitalization",font=("Arial",24))
+            endingDateLabel= ctk.CTkLabel(self.myDepositsInfoFrame, text="End Date",font=("Arial",22))
+            amountLabel= ctk.CTkLabel(self.myDepositsInfoFrame, text="Amount",font=("Arial",22))
+            interestRate=ctk.CTkLabel(self.myDepositsInfoFrame, text="Interest Rate",font=("Arial",22))
+            interestCap=ctk.CTkLabel(self.myDepositsInfoFrame, text="Interest Capitalization",font=("Arial",22))
             endingDateLabel.grid(row=0,column=0,padx=15,pady=10)
             amountLabel.grid(row=0,column=1,padx=15,pady=10)
             interestRate.grid(row=0,column=2,padx=15,pady=10)
@@ -99,19 +99,19 @@ class SavingsDepositsWidgets(ctk.CTkFrame):
                 text = str(deposit[1]) +" "+curr
                 myDepositId = deposit[0]
                 amount = deposit[1]
-                depositAmountLabel = ctk.CTkLabel(self.myDepositsInfoFrame, text=text,font=("Arial",20))
+                depositAmountLabel = ctk.CTkLabel(self.myDepositsInfoFrame, text=text,font=("Arial",18))
                 depositAmountLabel.grid(row=i,column=1,pady=5)
 
                 endDate=deposit[2].date()
-                depositEndingDateLabel = ctk.CTkLabel(self.myDepositsInfoFrame, text=endDate,font=("Arial",20))
+                depositEndingDateLabel = ctk.CTkLabel(self.myDepositsInfoFrame, text=endDate,font=("Arial",18))
                 depositEndingDateLabel.grid(row=i,column=0,pady=1)
 
                 interestRate= str(currDeposit[5]) + "% " + str(currDeposit[6])
-                depositInterestRateLabel = ctk.CTkLabel(self.myDepositsInfoFrame, text=interestRate,font=("Arial",20))
+                depositInterestRateLabel = ctk.CTkLabel(self.myDepositsInfoFrame, text=interestRate,font=("Arial",18))
                 depositInterestRateLabel.grid(row=i,column=2,pady=1)
 
                 interestCapitalization = str(currDeposit[7])
-                depositInterestCapLabel = ctk.CTkLabel(self.myDepositsInfoFrame, text=interestCapitalization,font=("Arial",20))
+                depositInterestCapLabel = ctk.CTkLabel(self.myDepositsInfoFrame, text=interestCapitalization,font=("Arial",18))
                 depositInterestCapLabel.grid(row=i,column=3,pady=1)
 
                 resignButton = ctk.CTkButton(self.myDepositsInfoFrame,text="Resign",
@@ -149,31 +149,79 @@ class SavingsDepositsWidgets(ctk.CTkFrame):
         confirmResignation = ctk.CTkButton(self.resignFrame, text="Confirm resignation", command=lambda: self.confirmResignation(self.parent.account.Id, self.myDepositId))
         confirmResignation.grid(row=3,column=1,sticky="w")
 
+
         #savings deposits offers frame
         self.depositOffers = ctk.CTkFrame(self, fg_color="transparent")
-        goBackButton = ctk.CTkButton(self.depositOffers, text="<-Back",command=lambda: self.goBack(self.depositOffers))
-        goBackButton.grid(row=0,column=0,sticky="w")
-        titleLabel = ctk.CTkLabel(self.depositOffers, text="oferty depozytow",font=("Arial",20))
-        titleLabel.grid(row=1,column=0,columnspan=2,padx=20)
+        goBackButton = ctk.CTkButton(self.depositOffers,
+                                    text="Back   ",
+                                    image=arrowImage,
+                                    fg_color="transparent",
+                                    corner_radius=30,
+                                    border_width=2,
+                                    border_spacing=6,
+                                    border_color="#3d9bd7",
+                                    command=lambda: self.goBack(self.depositOffers))
+        goBackButton.grid(row=0,column=0,pady=3,sticky="w")
+        titleLabel = ctk.CTkLabel(self.depositOffers, text="Saving Deposit Offers",font=("Arial",32))
+        titleLabel.grid(row=1,column=0,columnspan=2,pady=20)
+
         balance = self.parent.account.Balance
-        balanceLabel = ctk.CTkLabel(self.depositOffers, text=f"Your balance: {balance} PLN")
-        balanceLabel.grid(row=2,column=0,columnspan=2,padx=20)
+        balanceLabel = ctk.CTkLabel(self.depositOffers, text="Balance: {:.2f} PLN".format(balance),font=("Arial",18))
         myDepositOffers=getSavingsDepositOffers()
         takenIdList = getSavingsDepositTakenIds(self.parent.account.Id)
         takenIdList.sort()
         allIdList = getSavingsDepositOffersIds()
+
+        self.availableOffersFrame = ctk.CTkFrame(self.depositOffers, fg_color="transparent")
+        currencyLabel= ctk.CTkLabel(self.availableOffersFrame, text="Currency",font=("Arial",22))
+        minmaxLabel= ctk.CTkLabel(self.availableOffersFrame, text="Min-Max",font=("Arial",22))
+        durationLabel= ctk.CTkLabel(self.availableOffersFrame, text="Duration",font=("Arial",22))
+        interestRate=ctk.CTkLabel(self.availableOffersFrame, text="Interest Rate",font=("Arial",22))
+        interestCap=ctk.CTkLabel(self.availableOffersFrame, text="Interest Capitalization",font=("Arial",22))
+        currencyLabel.grid(row=0,column=0,padx=15,pady=10)
+        minmaxLabel.grid(row=0,column=1,padx=15,pady=10)
+        durationLabel.grid(row=0,column=2,padx=15,pady=10)
+        interestRate.grid(row=0,column=3,padx=15,pady=10)
+        interestCap.grid(row=0,column=4,padx=15,pady=10)
+
         for i,offer in enumerate(myDepositOffers, start=1):
             if(takenIdList == allIdList):
-                infoLabel = ctk.CTkLabel(self.depositOffers, text="Unfortunately we do not have deposit offer available for you",font=("Arial",20))
-                infoLabel.grid(row=i+3,column=0)
+                infoLabel = ctk.CTkLabel(self.depositOffers, text="Unfortunately, we do not have an available deposit offer for you.",font=("Arial",20))
+                infoLabel.grid(row=2,column=0,columnspan=2)
                 break
             elif(i in takenIdList):
                 pass
             else:
-                offerLabel = ctk.CTkLabel(self.depositOffers, text=offer,font=("Arial",20))
-                offerLabel.grid(row=i+3,column=0)
-                selectButton = ctk.CTkButton(self.depositOffers,text="wybierz",command=lambda offerId=i :self.selectOffer(offerId))
-                selectButton.grid(row=i+3,column=1)
+                currency = offer[1]
+                offerCurrencyLabel = ctk.CTkLabel(self.availableOffersFrame, text=currency,font=("Arial",18))
+                offerCurrencyLabel.grid(row=i,column=0,pady=1)
+                minmax=str(int(offer[2]))+"-"+str(int(offer[3]))+" PLN"
+                offerMinmaxLabel = ctk.CTkLabel(self.availableOffersFrame, text=minmax,font=("Arial",18))
+                offerMinmaxLabel.grid(row=i,column=1,pady=1)
+                duration = offer[4] 
+                offerDurationLabel = ctk.CTkLabel(self.availableOffersFrame, text=duration,font=("Arial",18))
+                offerDurationLabel.grid(row=i,column=2,pady=1)
+                interestRate=str(offer[5])+"% "+str(offer[6])
+                offerInterestRateLabel= ctk.CTkLabel(self.availableOffersFrame, text=interestRate,font=("Arial",18))
+                offerInterestRateLabel.grid(row=i,column=3,pady=1)
+                interestCap = offer[7]
+                offerInterestCap = ctk.CTkLabel(self.availableOffersFrame, text=interestCap,font=("Arial",18))
+                offerInterestCap.grid(row=i,column=4,pady=1)
+
+                selectButton = ctk.CTkButton(self.availableOffersFrame,text="Select Offer",
+                                            fg_color="transparent",
+                                            corner_radius=30,
+                                            border_width=2,
+                                            border_spacing=6,
+                                            border_color="#3d9bd7",
+                                            command=lambda offerId=i :self.selectOffer(offerId))
+                selectButton.grid(row=i,column=5,pady=1)
+                self.availableOffersFrame.grid(row=2,column=0,columnspan=2)
+                balanceLabel.grid(row=3,column=0,columnspan=2,pady=30)
+
+        self.depositOffers.grid_columnconfigure(0, weight=1)
+        self.depositOffers.grid_columnconfigure(1, weight=1)
+
 
         #confirm your offer
         self.confirmOffer = ctk.CTkFrame(self, fg_color="transparent")
@@ -215,7 +263,7 @@ class SavingsDepositsWidgets(ctk.CTkFrame):
 
     def showDepositOffers(self):
         self.mainFrame.pack_forget()
-        self.depositOffers.pack()
+        self.depositOffers.pack(fill=ctk.BOTH, expand=True)
 
 
     def selectOffer(self, newId):
@@ -297,7 +345,7 @@ class SavingsDepositsWidgets(ctk.CTkFrame):
 
     def goBack(self, frame):
         frame.pack_forget()
-        self.mainFrame.pack()
+        self.mainFrame.pack(fill=ctk.BOTH,expand=True)
 
     def setId(self, newId):
         self.offerId = newId
