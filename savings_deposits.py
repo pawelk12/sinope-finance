@@ -213,7 +213,8 @@ class SavingsDepositsWidgets(ctk.CTkFrame):
                                             corner_radius=30,
                                             border_width=2,
                                             border_spacing=6,
-                                            border_color="#3d9bd7",
+                                            border_color="#0ec41d",
+                                            hover_color="#16631c",
                                             command=lambda offerId=i :self.selectOffer(offerId))
                 selectButton.grid(row=i,column=5,pady=1)
                 self.availableOffersFrame.grid(row=2,column=0,columnspan=2)
@@ -223,28 +224,52 @@ class SavingsDepositsWidgets(ctk.CTkFrame):
         self.depositOffers.grid_columnconfigure(1, weight=1)
 
 
+
+
+
+
         #confirm your offer
         self.confirmOffer = ctk.CTkFrame(self, fg_color="transparent")
-        goBackButton = ctk.CTkButton(self.confirmOffer, text="<-Back",command=lambda :self.goBackFromConfirmation())
-        goBackButton.grid(row=0,column=0,sticky="w")
+        self.confirmOffer.grid_columnconfigure(0, weight=1)
+        self.confirmOffer.grid_columnconfigure(1, weight=1)
+        goBackButton = ctk.CTkButton(self.confirmOffer,
+                                     text="Back   ",
+                                     image=arrowImage,
+                                     fg_color="transparent",
+                                     corner_radius=30,
+                                     border_width=2,
+                                     border_spacing=6,
+                                     border_color="#3d9bd7",
+                                     command=lambda :self.goBackFromConfirmation())
+        goBackButton.grid(row=0,column=0,sticky="w",pady=3)
+
+        titleLabel = ctk.CTkLabel(self.confirmOffer, text="Confirm Offer",font=("Arial",32))
+        titleLabel.grid(row=1,column=0,columnspan=6,pady=20)
 
         balance = self.parent.account.Balance
-        balanceLabel = ctk.CTkLabel(self.confirmOffer, text=f"Your balance: {balance} PLN")
-        balanceLabel.grid(row=2,column=0,columnspan=2,padx=20)
+        #text=f"Your balance: {balance} PLN"
+        balanceLabel = ctk.CTkLabel(self.confirmOffer, text=f"")
+        balanceLabel.grid(row=4,column=0,columnspan=2,padx=20)
 
-        amountLabel = ctk.CTkLabel(self.confirmOffer, text="Amount")
-        amountLabel.grid(row=3,column=0)
+        amountLabel = ctk.CTkLabel(self.confirmOffer, text="Please enter amount:",font=("Arial",18))
+        amountLabel.grid(row=5,column=1,sticky="e")
         self.amountEntry = ctk.CTkEntry(self.confirmOffer,
                                           fg_color="transparent",
                                           border_width=2,
-                                          border_color="#3d9bd7")
-        self.amountEntry.grid(row=3,column=1)
+                                          border_color="#3d9bd7",font=("Arial",16))
+        self.amountEntry.grid(row=5,column=2,padx=5)
 
         self.statusLabel = ctk.CTkLabel(self.confirmOffer, text="",text_color="#ff6633")
-        self.statusLabel.grid(row=4,column=0)
-        self.exchangeRate = ctk.CTkLabel(self.confirmOffer, text="")
-        self.exchangeRate.grid(row=5,column=0)
-        self.acceptOfferButton = ctk.CTkButton(self.confirmOffer, text="Accept offer")
+        self.statusLabel.grid(row=6,column=1,columnspan=3)
+        self.exchangeRate = ctk.CTkLabel(self.confirmOffer, text="",font=("Arial",18))
+        self.exchangeRate.grid(row=7,column=2)
+        self.acceptOfferButton = ctk.CTkButton(self.confirmOffer, text="Accept Offer",
+                                               fg_color="transparent",
+                                                corner_radius=30,
+                                                border_width=2,
+                                                border_spacing=6,
+                                                border_color="#0ec41d",
+                                                hover_color="#16631c",)
 
 
         #packing stuff
@@ -269,13 +294,38 @@ class SavingsDepositsWidgets(ctk.CTkFrame):
     def selectOffer(self, newId):
         self.setId(newId)
         self.depositOffers.pack_forget()
+
+        currencyTitleLabel= ctk.CTkLabel(self.confirmOffer, text="Currency",font=("Arial",22))
+        minmaxLabel= ctk.CTkLabel(self.confirmOffer, text="Min-Max",font=("Arial",22))
+        durationLabel= ctk.CTkLabel(self.confirmOffer, text="Duration",font=("Arial",22))
+        interestRate=ctk.CTkLabel(self.confirmOffer, text="Interest Rate",font=("Arial",22))
+        interestCap=ctk.CTkLabel(self.confirmOffer, text="Interest Capitalization",font=("Arial",22))
+        currencyTitleLabel.grid(row=2,column=0,padx=15,pady=10)
+        minmaxLabel.grid(row=2,column=1,padx=15,pady=10)
+        durationLabel.grid(row=2,column=2,padx=15,pady=10)
+        interestRate.grid(row=2,column=3,padx=15,pady=10)
+        interestCap.grid(row=2,column=4,padx=15,pady=10)
+
         tupleId = self.offerId - 1
-        selectedOffer = getSavingsDepositOffers()[tupleId]
-        self.offerLabel = ctk.CTkLabel(self.confirmOffer, text=selectedOffer,font=("Arial",20))
-        self.offerLabel.grid(row=1,column=1)
-        currencyLabel = ctk.CTkLabel(self.confirmOffer, text='PLN',font=("Arial",20))
-        currencyLabel.grid(row=3,column=2)
-        self.confirmOffer.pack()
+        offer = getSavingsDepositOffers()[tupleId]
+        currency = offer[1]
+        self.offerCurrencyLabel = ctk.CTkLabel(self.confirmOffer, text=currency,font=("Arial",18))
+        self.offerCurrencyLabel.grid(row=3,column=0,pady=1)
+        minmax=str(int(offer[2]))+"-"+str(int(offer[3]))+" PLN"
+        self.offerMinmaxLabel = ctk.CTkLabel(self.confirmOffer, text=minmax,font=("Arial",18))
+        self.offerMinmaxLabel.grid(row=3,column=1,pady=1)
+        duration = offer[4] 
+        self.offerDurationLabel = ctk.CTkLabel(self.confirmOffer, text=duration,font=("Arial",18))
+        self.offerDurationLabel.grid(row=3,column=2,pady=1)
+        interestRate=str(offer[5])+"% "+str(offer[6])
+        self.offerInterestRateLabel= ctk.CTkLabel(self.confirmOffer, text=interestRate,font=("Arial",18))
+        self.offerInterestRateLabel.grid(row=3,column=3,pady=1)
+        interestCap = offer[7]
+        self.offerInterestCap = ctk.CTkLabel(self.confirmOffer, text=interestCap,font=("Arial",18))
+        self.offerInterestCap.grid(row=3,column=4,pady=1)
+        self.currencyLabel = ctk.CTkLabel(self.confirmOffer, text='PLN',font=("Arial",18))
+        self.currencyLabel.grid(row=5,column=3,sticky="w")
+        self.confirmOffer.pack(fill=ctk.BOTH,expand=True)
         self.update()
 
 
@@ -296,12 +346,12 @@ class SavingsDepositsWidgets(ctk.CTkFrame):
                 mysqlOfferId=self.offerId
                 self.acceptOfferButton.configure(command=lambda:self.acceptOffer(mysqlOfferId,float(self.amountEntry.get()),
                                                                           response.json()['rates'][f'{to}']))
-                self.acceptOfferButton.grid(row=6,column=0)
+                self.acceptOfferButton.grid(row=8,column=2,pady=10)
             elif(float(self.amountEntry.get())<getSavingsDepositOffers()[tupleId][2] or
                  float(self.amountEntry.get())>getSavingsDepositOffers()[tupleId][3]):
                 minAmount = getSavingsDepositOffers()[tupleId][2]
                 maxAmount = getSavingsDepositOffers()[tupleId][3]
-                self.statusLabel.configure(text=f"min amount: {minAmount} max amount: {maxAmount}")
+                self.statusLabel.configure(text=f"min amount: {minAmount}, max amount: {maxAmount}")
                 self.exchangeRate.configure(text="")
                 self.acceptOfferButton.grid_forget()
             else:
@@ -331,7 +381,13 @@ class SavingsDepositsWidgets(ctk.CTkFrame):
         self.amountEntry.delete(0, ctk.END)
         self.exchangeRate.configure(text="")
         self.acceptOfferButton.grid_forget()
-        self.offerLabel.grid_forget()
+        self.offerCurrencyLabel.grid_forget()
+        self.offerCurrencyLabel.grid_forget()
+        self.offerMinmaxLabel.grid_forget()
+        self.offerDurationLabel.grid_forget()
+        self.offerInterestRateLabel.grid_forget()
+        self.offerInterestCap.grid_forget()
+        self.currencyLabel.grid_forget()
         self.confirmOffer.pack_forget()
         self.mainFrame.pack()
         self.after_cancel(self.updateProcessId)
