@@ -137,18 +137,42 @@ class SavingsDepositsWidgets(ctk.CTkFrame):
 
         # confirm resignation frame
         self.resignFrame = ctk.CTkFrame(self, fg_color="transparent")
-        self.myDepositLabel = ctk.CTkLabel(self.resignFrame, text=self.myDeposit,font=("Arial",20))
-        self.myDepositLabel.grid(row=0,column=0, columnspan = 2)
-        confirmationLabel = ctk.CTkLabel(self.resignFrame, text="Are you sure you want to cancel the deposit? Early cancellation will result in the loss of interest.+fee 1%",
-                                         font=("Arial",20))
-        confirmationLabel.grid(row=1,column=0,columnspan = 2)
-        self.myDepositStatusLabel = ctk.CTkLabel(self.resignFrame, text="",font=("Arial",20))
-        self.myDepositStatusLabel.grid(row=2,column=0,columnspan=2)
-        goBackButton = ctk.CTkButton(self.resignFrame, text="Cancel",command=lambda: self.goBackFromResign())
-        goBackButton.grid(row=3,column=0,sticky="e")
-        confirmResignation = ctk.CTkButton(self.resignFrame, text="Confirm resignation", command=lambda: self.confirmResignation(self.parent.account.Id, self.myDepositId))
-        confirmResignation.grid(row=3,column=1,sticky="w")
+        self.resignFrame.grid_columnconfigure(0, weight=1)
+        self.resignFrame.grid_columnconfigure(1, weight=1)
+        
+        placeholderLabel = ctk.CTkLabel(self.resignFrame, text="",font=("Arial",32))
+        placeholderLabel.grid(row=0,column=0)
 
+        titleLabel = ctk.CTkLabel(self.resignFrame, text="Early Withdrawal",font=("Arial",32))
+        titleLabel.grid(row=1,column=0,columnspan=2,pady=20)
+    
+        self.myDepositLabel = ctk.CTkLabel(self.resignFrame, text=self.myDeposit,font=("Arial",20))
+        confirmationLabel = ctk.CTkLabel(self.resignFrame, text="Are you sure you want to cancel the deposit?",font=("Arial",20))
+        confirmationLabel.grid(row=2,column=0,columnspan = 2)
+        penaltyLabel = ctk.CTkLabel(self.resignFrame, text="Canceling early will result in a loss of interest and a 1% fee.",font=("Arial",20))
+        penaltyLabel.grid(row=3,column=0,columnspan = 2)
+
+        placeholerLabel = ctk.CTkLabel(self.resignFrame, text="",font=("Arial",20))
+        placeholerLabel.grid(row=4,column=0)
+        self.myDepositStatusLabel = ctk.CTkLabel(self.resignFrame, text="",font=("Arial",20))
+        self.myDepositStatusLabel.grid(row=5,column=0,columnspan=2)
+        goBackButton = ctk.CTkButton(self.resignFrame, text="Cancel",
+                                     fg_color="transparent",
+                                     corner_radius=30,
+                                     border_width=2,
+                                     border_spacing=6,
+                                     border_color="#3d9bd7",
+                                     command=lambda: self.goBackFromResign())
+        goBackButton.grid(row=6,column=0,sticky="e",padx=4)
+        confirmResignation = ctk.CTkButton(self.resignFrame, text="Confirm resignation",
+                                           fg_color="transparent",
+                                           corner_radius=30,
+                                           border_width=2,
+                                           border_spacing=6,
+                                           border_color="#ed460e",
+                                           hover_color="#632410",
+                                           command=lambda: self.confirmResignation(self.parent.account.Id, self.myDepositId))
+        confirmResignation.grid(row=6,column=1,sticky="w",padx=4)
 
         #savings deposits offers frame
         self.depositOffers = ctk.CTkFrame(self, fg_color="transparent")
@@ -223,12 +247,6 @@ class SavingsDepositsWidgets(ctk.CTkFrame):
         self.depositOffers.grid_columnconfigure(0, weight=1)
         self.depositOffers.grid_columnconfigure(1, weight=1)
 
-
-
-
-
-
-
         #confirm your offer
         self.confirmOffer = ctk.CTkFrame(self, fg_color="transparent")
         self.confirmOffer.grid_columnconfigure(0, weight=1)
@@ -282,9 +300,8 @@ class SavingsDepositsWidgets(ctk.CTkFrame):
 
 
         #packing stuff
-        #self.mainFrame.pack(expand = True,fill=ctk.BOTH)
+
         self.mainFrame.pack(fill=ctk.BOTH, expand=True)
-        #self.pack(expand = True,fill=ctk.BOTH)
         self.pack(fill=ctk.BOTH, expand=True)
 
     def goBackHome(self):
@@ -382,8 +399,9 @@ class SavingsDepositsWidgets(ctk.CTkFrame):
             self.myDepositStatusLabel.configure(text="")
             response = requests.get(f'https://{host}/latest?amount={amount}&from={fromCurrency}&to=PLN')
             amount=float(response.json()['rates'][f'PLN'])
-            exchangedAmountAfterFee=amount*0.99
-            self.myDepositStatusLabel.configure(text=str(exchangedAmountAfterFee) + " " + f'PLN')
+            exchangedAmountAfterFee=(amount*0.99)
+            exchangedAmountAfterFee=round(exchangedAmountAfterFee,2)
+            self.myDepositStatusLabel.configure(text="You will get back: "+str(exchangedAmountAfterFee) + " " + f'PLN')
             self.exchangedAmountPLN = exchangedAmountAfterFee
         except requests.ConnectionError:
             self.statusLabel.configure(text="Connection error")
