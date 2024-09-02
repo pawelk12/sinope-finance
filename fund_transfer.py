@@ -1,5 +1,6 @@
 import customtkinter as ctk
 from db_service import TransferMoney
+from tkinter import PhotoImage
 
 class TransferWidgets(ctk.CTkFrame):
     def __init__(self,master, mainframe):
@@ -7,33 +8,72 @@ class TransferWidgets(ctk.CTkFrame):
 
         self.parent = mainframe
 
-        goBackButton = ctk.CTkButton(self, text="<-Back to Home",command=self.goBack)
-        goBackButton.grid(row=0,column=0,sticky="w")
+        pathToArrow = "resources/arrowLeft.png"
+        arrowImage = PhotoImage(file=pathToArrow)
 
-        titleLabel = ctk.CTkLabel(self, text="Fund transfer",font=("Arial",20))
-        titleLabel.grid(row=1,column=0,columnspan=4,padx=20)
+        goBackButton = ctk.CTkButton(self,
+                                    text="Home   ",
+                                    image=arrowImage,
+                                    fg_color="transparent",
+                                    corner_radius=30,
+                                    border_width=2,
+                                    border_spacing=6,
+                                    border_color="#3d9bd7",
+                                    command=self.goBack)
+        
+        goBackButton.grid(row=0,column=0,sticky="w",pady=3)
 
-        accountNumberLabel = ctk.CTkLabel(self,text="Enter bank account number: ",padx=20)
-        accountNumberLabel.grid(row=2,column=0,columnspan=2)
-        self.accountNumberEntry = ctk.CTkEntry(self)
-        self.accountNumberEntry.grid(row=2,column=2)
-
-        amountLabel = ctk.CTkLabel(self,text="Enter amount: ",padx=20)
-        amountLabel.grid(row=3,column=0,columnspan=2)
-        self.amountEntry = ctk.CTkEntry(self)
-        self.amountEntry.grid(row=3,column=2)
-
-        currencyLabel = ctk.CTkLabel(self,text="PLN",padx=10)
-        currencyLabel.grid(row=3,column=3)
-
-        self.statusLabel = ctk.CTkLabel(self, text="", font=("arial", 12))
-        self.statusLabel.grid(row=4,column=0,columnspan=4,padx=20)
-
-        transferButton = ctk.CTkButton(self, text="Transfer",command=self.Transfer)
-        transferButton.grid(row=5,column=0,columnspan=4)
+        titleLabel = ctk.CTkLabel(self, text="Transfer Funds",font=("Arial",32))
+        titleLabel.grid(row=1,column=0,columnspan=2,pady=20)
 
 
-        self.pack(expand = True)
+        self.transferFrame = ctk.CTkFrame(self, fg_color="transparent")
+        self.transferFrame._border_width = 3
+        self.transferFrame._border_color = "#3d9bd7"
+        self.transferFrame._corner_radius = 32
+
+        self.transferFrame.grid(row=2,column=0,columnspan=2,pady=10)
+
+        accountNumberLabel = ctk.CTkLabel(self.transferFrame,text="Please enter bank account number: ",font=("Arial",18))
+        accountNumberLabel.grid(row=0,column=0,sticky="e",padx=15,pady=10)
+
+        self.accountNumberEntry = ctk.CTkEntry(self.transferFrame,
+                                          fg_color="transparent",
+                                          border_width=2,
+                                          border_color="#3d9bd7",
+                                          font=("Arial",16),
+                                          width=200)
+        self.accountNumberEntry.grid(row=0,column=1,pady=10)
+
+        amountLabel = ctk.CTkLabel(self.transferFrame,text="Please enter amount: ",font=("Arial",18))
+        amountLabel.grid(row=1,column=0,sticky="e",padx=10)
+        self.amountEntry = ctk.CTkEntry(self.transferFrame,
+                                          fg_color="transparent",
+                                          border_width=2,
+                                          border_color="#3d9bd7",
+                                          font=("Arial",16),
+                                          width=200)
+        self.amountEntry.grid(row=1,column=1)
+
+        currencyLabel = ctk.CTkLabel(self.transferFrame,text="PLN",font=("Arial",18))
+        currencyLabel.grid(row=1,column=2,sticky="w",padx=15)
+
+        self.statusLabel = ctk.CTkLabel(self.transferFrame, text="", font=("Arial", 12))
+        self.statusLabel.grid(row=2,column=0,columnspan=3,padx=20)
+
+        transferButton = ctk.CTkButton(self.transferFrame, text="Transfer",
+                                        fg_color="transparent",
+                                        corner_radius=30,
+                                        border_width=2,
+                                        border_spacing=6,
+                                        border_color="#3d9bd7",command=self.Transfer)
+        transferButton.grid(row=3,column=0,columnspan=3,pady=10)
+
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_columnconfigure(1, weight=1)
+
+
+        self.pack(fill=ctk.BOTH, expand = True)
 
     def Transfer(self):
 
