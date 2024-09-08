@@ -2,6 +2,7 @@ import customtkinter as ctk
 from personal_info import PersonalInfoWidgets
 from login_records import LoginRecords
 from db_service import getLoginRecords
+from tkinter import PhotoImage
 
 class AccountWidgets(ctk.CTkFrame):
     def __init__(self,master, mainframe):
@@ -9,17 +10,53 @@ class AccountWidgets(ctk.CTkFrame):
 
         self.parent = mainframe
 
-        goBackButton = ctk.CTkButton(self, text="<-Back to Home",command=self.goBack)
-        goBackButton.grid(row=0,column=0,sticky="w")
+        pathToArrow = "resources/arrowLeft.png"
+        arrowImage = PhotoImage(file=pathToArrow)
 
-        editInfoButton = ctk.CTkButton(self, text="Edit personal information",command=self.editInfo)
-        editInfoButton.grid(row=1,column=0)
+        goBackButton = ctk.CTkButton(self,
+                                    text="Home   ",
+                                    image=arrowImage,
+                                    fg_color="transparent",
+                                    corner_radius=30,
+                                    border_width=2,
+                                    border_spacing=6,
+                                    border_color="#3d9bd7",
+                                    command=self.goBack)
+        goBackButton.pack(anchor="nw",pady=3)
 
-        showLoginRecordsButton = ctk.CTkButton(self, text="Show account login history",command=self.showLoginRecords)
-        showLoginRecordsButton.grid(row=1,column=1)
+        titleLabel = ctk.CTkLabel(self, text="Account Widgets",font=("Arial",32))
+        titleLabel.pack(anchor="n",pady=20)
+
+        self.mainFrameButtons = ctk.CTkFrame(self, fg_color="transparent")
+
+        editInfoButton = ctk.CTkButton(self.mainFrameButtons, text="Edit personal information",
+                                        fg_color="transparent",
+                                        corner_radius=30,
+                                        border_width=2,
+                                        border_spacing=6,
+                                        border_color="#3d9bd7",
+                                        command=self.editInfo)
+        editInfoButton.pack(side=ctk.LEFT,expand=True,anchor="ne",padx=20)
+
+        showLoginRecordsButton = ctk.CTkButton(self.mainFrameButtons,
+                                        text="Show your login history",
+                                        fg_color="transparent",
+                                        corner_radius=30,
+                                        border_width=2,
+                                        border_spacing=6,
+                                        border_color="#3d9bd7",
+                                        command=self.showLoginRecords)
+        showLoginRecordsButton.pack(side=ctk.LEFT,expand=True,anchor="nw",padx=20)
+        self.mainFrameButtons.pack()
+
+        pathToAccountWidgetsPicture = "resources/accountWidgets/accountWidgets.png"
+        accountWidgetsImage = PhotoImage(file=pathToAccountWidgetsPicture)
+
+        pictureLabel = ctk.CTkLabel(self, text="",image=accountWidgetsImage)
+        pictureLabel.pack(side=ctk.BOTTOM,expand=True)
 
 
-        self.pack(expand = True)
+        self.pack(expand = True,fill=ctk.BOTH)
 
     def goBack(self):
         self.pack_forget()
