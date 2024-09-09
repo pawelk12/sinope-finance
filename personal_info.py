@@ -3,6 +3,7 @@ import hashlib
 from db_service import Login
 from db_service import IfLoginExists
 from db_service import EditPersonalInfo
+from tkinter import PhotoImage
 
 class PersonalInfoWidgets(ctk.CTkFrame):
     def __init__(self,master, mainframe):
@@ -10,59 +11,94 @@ class PersonalInfoWidgets(ctk.CTkFrame):
         
         self.parent = mainframe
 
-        goBackButton = ctk.CTkButton(self, text="<-Back",command=self.goBack)
-        goBackButton.grid(row=0,column=0,sticky="w")
+        pathToArrow = "resources/arrowLeft.png"
+        arrowImage = PhotoImage(file=pathToArrow)
 
-        titleLabel = ctk.CTkLabel(self,text="Edit your personal details")
-        titleLabel.grid(row=1,column=0,columnspan=2,padx=20)
+        goBackButton = ctk.CTkButton(self, text="Back   ",
+                                    image=arrowImage,
+                                    fg_color="transparent",
+                                    corner_radius=30,
+                                    border_width=2,
+                                    border_spacing=6,
+                                    border_color="#3d9bd7",
+                                    command=self.goBack)
+        goBackButton.grid(row=0,column=0,sticky="w",pady=3)
+
+        titleLabel = ctk.CTkLabel(self,text="Edit your personal details",font=("Arial",32))
+        titleLabel.grid(row=1,column=0,columnspan=2,pady=20)
+
+        self.grid_columnconfigure(0,weight=1)
+        self.grid_columnconfigure(1,weight=1)
 
 
-        firstnameLabel = ctk.CTkLabel(self, text="Frist Name: " + self.parent.account.FirstName)
-        firstnameLabel.grid(row=2,column=0,sticky = "w")
+        self.editFrame = ctk.CTkFrame(self, fg_color="transparent")
 
-        lastnameLabel = ctk.CTkLabel(self, text="Last name: " + self.parent.account.LastName)
-        lastnameLabel.grid(row=3,column=0,sticky = "w")
+        firstnameLabel = ctk.CTkLabel(self.editFrame, text="Frist Name: " + self.parent.account.FirstName,font=("Arial",18))
+        firstnameLabel.grid(row=0,column=0,sticky = "w")
 
-        dateOfBirthLabel = ctk.CTkLabel(self, text="Date of Birth: " + str(self.parent.account.BirthDate))
-        dateOfBirthLabel.grid(row=4,column=0,sticky = "w")
+        lastnameLabel = ctk.CTkLabel(self.editFrame, text="Last name: " + self.parent.account.LastName,font=("Arial",18))
+        lastnameLabel.grid(row=1,column=0,sticky = "w")
 
-        bankAccNumLabel = ctk.CTkLabel(self, text="Acct. No.: " + str(self.parent.account.BankAccNum))
-        bankAccNumLabel.grid(row=5,column=0,sticky = "w")
+        dateOfBirthLabel = ctk.CTkLabel(self.editFrame, text="Date of Birth: " + str(self.parent.account.BirthDate),font=("Arial",18))
+        dateOfBirthLabel.grid(row=2,column=0,sticky = "w")
+
+        bankAccNumLabel = ctk.CTkLabel(self.editFrame, text="Acct. No.: " + str(self.parent.account.BankAccNum),font=("Arial",18))
+        bankAccNumLabel.grid(row=3,column=0,sticky = "w")
 
         # entry boxes
 
-        usernameLabel = ctk.CTkLabel(self,text="Login: ",width=20)
-        usernameLabel.grid(row=6,column=0,sticky = "w")
+        usernameLabel = ctk.CTkLabel(self.editFrame,text="Login: ",width=20,font=("Arial",18))
+        usernameLabel.grid(row=4,column=0,sticky = "w")
 
         loginStartValue = ctk.StringVar()
-        self.usernameEntry = ctk.CTkEntry(self, textvariable=loginStartValue)
+        self.usernameEntry = ctk.CTkEntry(self.editFrame, textvariable=loginStartValue,
+                                          fg_color="transparent",
+                                          border_width=2,
+                                          border_color="#3d9bd7",
+                                          font=("Arial",16))
         loginStartValue.set(self.parent.account.Username)
-        self.usernameEntry.grid(row=6,column=1)
+        self.usernameEntry.grid(row=4,column=1)
 
 
-        usernameLabel = ctk.CTkLabel(self,text="E-mail: ",width=20)
-        usernameLabel.grid(row=7,column=0,sticky = "w")
+        usernameLabel = ctk.CTkLabel(self.editFrame,text="E-mail: ",width=20,font=("Arial",18))
+        usernameLabel.grid(row=5,column=0,sticky = "w")
 
         emailStartValue = ctk.StringVar()
-        self.emailEntry = ctk.CTkEntry(self, textvariable=emailStartValue)
+        self.emailEntry = ctk.CTkEntry(self.editFrame, textvariable=emailStartValue,
+                                          fg_color="transparent",
+                                          border_width=2,
+                                          border_color="#3d9bd7",
+                                          font=("Arial",16))
         emailStartValue.set(self.parent.account.Email)
-        self.emailEntry.grid(row=7,column=1)
+        self.emailEntry.grid(row=5,column=1,pady=3)
 
-        confirmLabel = ctk.CTkLabel(self,text="Confirm changes with your password ")
-        confirmLabel.grid(row=8,column=0,sticky = "w")
+        confirmLabel = ctk.CTkLabel(self.editFrame,text="Confirm changes with your password ",font=("Arial",18))
+        confirmLabel.grid(row=6,column=0,columnspan=2)
 
-        passwordLabel = ctk.CTkLabel(self,text="Password: ",width=20)
-        passwordLabel.grid(row=9,column=0)
-        self.passwordEntry = ctk.CTkEntry(self, show="*")
-        self.passwordEntry.grid(row=9,column=1)
+        passwordLabel = ctk.CTkLabel(self.editFrame,text="Password: ",width=20,font=("Arial",18))
+        passwordLabel.grid(row=7,column=0,sticky="w")
+        self.passwordEntry = ctk.CTkEntry(self.editFrame, show="*",
+                                          fg_color="transparent",
+                                          border_width=2,
+                                          border_color="#3d9bd7",
+                                          font=("Arial",16))
+        self.passwordEntry.grid(row=7,column=1)
 
-        self.statusLabel = ctk.CTkLabel(self, text="")
-        self.statusLabel.grid(row=10,column=0,columnspan=2,padx=20)
+        self.statusLabel = ctk.CTkLabel(self.editFrame, text="")
+        self.statusLabel.grid(row=8,column=0,columnspan=2,padx=20)
         
-        saveButton = ctk.CTkButton(self, text="Save",command=self.SaveChanges)
-        saveButton.grid(row=11,column=0,columnspan=2)
+        saveButton = ctk.CTkButton(self.editFrame, text="Save",
+                                           fg_color="transparent",
+                                           corner_radius=30,
+                                           border_width=2,
+                                           border_spacing=6,
+                                           border_color="#3d9bd7",command=self.SaveChanges)
+        saveButton.grid(row=9,column=0,columnspan=2,pady=20)
 
-        self.pack(expand = True)
+
+        self.editFrame.grid(row=2,column=0,columnspan=2)
+        self.pack(expand = True,fill=ctk.BOTH)
+
 
     def SaveChanges(self):
         hashed_passwd = hashlib.sha256(self.passwordEntry.get().encode()).hexdigest()
@@ -70,12 +106,12 @@ class PersonalInfoWidgets(ctk.CTkFrame):
         email = self.parent.account.Email
 
         if(Login(username,hashed_passwd)== None):
-            print(self.parent.account.Username+self.parent.account.Email)
             self.statusLabel.configure(text="Incorrect password",text_color="#ff6633")
             self.passwordEntry.delete(0, ctk.END)
             return
 
         if(self.usernameEntry.get() == self.parent.account.Username and self.emailEntry.get() == email):
+            self.statusLabel.configure(text="You have not changed anything",text_color="#ff6633")
             return
 
         if(IfLoginExists(self.usernameEntry.get()) and self.usernameEntry.get()!=username):
