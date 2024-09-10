@@ -40,6 +40,7 @@ try:
         LOG_ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,\
         USER_ID INT NOT NULL,\
         DATE_OF_LOGIN DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,\
+        DEVICE_NAME VARCHAR(255) NOT NULL,\
         FOREIGN KEY (USER_ID) REFERENCES ACCOUNTS(ID));")
 
     mycursor.execute("CREATE TABLE IF NOT EXISTS DEPOSIT_OFFERS (\
@@ -210,16 +211,16 @@ def EditPersonalInfo(account_id, new_login, new_email):
     db.commit()
     mycursor.close()
 
-def addLoginRecord(account_id):
+def addLoginRecord(account_id, deviceName):
     mycursor = db.cursor()
-    mycursor.execute("INSERT INTO LOGIN_RECORDS (USER_ID)\
-                     VALUES (%s)",(account_id,))
+    mycursor.execute("INSERT INTO LOGIN_RECORDS (USER_ID,DEVICE_NAME)\
+                     VALUES (%s,%s)",(account_id,deviceName))
     db.commit()
     mycursor.close()
 
 def getLoginRecords(account_id):
     mycursor = db.cursor()
-    mycursor.execute("SELECT DATE_OF_LOGIN\
+    mycursor.execute("SELECT DATE_OF_LOGIN, DEVICE_NAME\
                      FROM LOGIN_RECORDS\
                      WHERE USER_ID = %s\
                      ORDER BY DATE_OF_LOGIN DESC;", (account_id,))

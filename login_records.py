@@ -1,24 +1,54 @@
 import customtkinter as ctk
+from tkinter import PhotoImage
 
-class LoginRecords(ctk.CTkScrollableFrame):
+class LoginRecords(ctk.CTkFrame):
     def __init__(self,master, mainframe, login_history):
         super().__init__(master)
         
         self.parent = mainframe
 
-        goBackButton = ctk.CTkButton(self, text="<-Back",command=self.goBack)
-        goBackButton.grid(row=0,column=0,sticky="w")
+        pathToArrow = "resources/arrowLeft.png"
+        arrowImage = PhotoImage(file=pathToArrow)
 
-        titleLabel = ctk.CTkLabel(self, text="Login history",font=("Arial",20))
-        titleLabel.grid(row=1,column=0,padx=20)
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_columnconfigure(1, weight=1)
+
+        goBackButton = ctk.CTkButton(self,
+                                    text="Back   ",
+                                    image=arrowImage,
+                                    fg_color="transparent",
+                                    corner_radius=30,
+                                    border_width=2,
+                                    border_spacing=6,
+                                    border_color="#3d9bd7"
+                                    ,command=self.goBack)
+        goBackButton.grid(row=0,column=0,sticky="w",pady=3)
+
+        titleLabel = ctk.CTkLabel(self, text="Login History",font=("Arial",32))
+        titleLabel.grid(row=1,column=0,columnspan=2,pady=20)
+
+        self.loginHistoryFrame = ctk.CTkScrollableFrame(self, fg_color="transparent")
+        self.loginHistoryFrame.configure(width=600, height=450)
+        self.loginHistoryFrame.grid_columnconfigure(0,weight=1)
+        self.loginHistoryFrame.grid_columnconfigure(1,weight=1)
+
+        dateInfoLabel = ctk.CTkLabel(self.loginHistoryFrame, text="Date",font=("Arial",24),padx=20)
+        deviceInfoLabel = ctk.CTkLabel(self.loginHistoryFrame, text="Device",font=("Arial",24),padx=20)
+        dateInfoLabel.grid(row=0,column=0,sticky="e",pady=10)
+        deviceInfoLabel.grid(row=0,column=1,sticky="w")
 
         i = 0
         for record in login_history:
-            recordLabel = ctk.CTkLabel(self,text=record[0],padx=20)
-            recordLabel.grid(row=2+i,column=0)
+            dateLabel = ctk.CTkLabel(self.loginHistoryFrame,text=str(record[0]),padx=20,font=("Arial",18))
+            dateLabel.grid(row=i+1,column=0,sticky="e")
+            deviceLabel = ctk.CTkLabel(self.loginHistoryFrame,text=record[1],padx=20,font=("Arial",18))
+            deviceLabel.grid(row=i+1,column=1,sticky="w")
             i = i + 1
+            if i > 199:
+                break
 
-        self.pack(expand = True) 
+        self.loginHistoryFrame.grid(row=2,column=0,columnspan=2)
+        self.pack(expand = True,fill=ctk.BOTH) 
 
     def goBack(self):
         self.pack_forget()

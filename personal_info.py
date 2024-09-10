@@ -24,7 +24,7 @@ class PersonalInfoWidgets(ctk.CTkFrame):
                                     command=self.goBack)
         goBackButton.grid(row=0,column=0,sticky="w",pady=3)
 
-        titleLabel = ctk.CTkLabel(self,text="Edit your personal details",font=("Arial",32))
+        titleLabel = ctk.CTkLabel(self,text="Edit Your Personal Details",font=("Arial",32))
         titleLabel.grid(row=1,column=0,columnspan=2,pady=20)
 
         self.grid_columnconfigure(0,weight=1)

@@ -1,6 +1,7 @@
 import customtkinter as ctk
 from db_service import Login as ReadFromDB, addLoginRecord
 import hashlib
+import platform
 
 class LoginWidgets(ctk.CTkFrame):
     def __init__(self,master):
@@ -57,7 +58,9 @@ class LoginWidgets(ctk.CTkFrame):
         account_id = ReadFromDB(self.usernameEntry.get(), hashlib.sha256(self.passwordEntry.get().encode()).hexdigest())
         if(account_id):
             self.statusLabel.configure(text="Logged successfully",text_color="#009900")
-            addLoginRecord(account_id)
+            system = platform.uname()
+            deviceName = str(system.node)
+            addLoginRecord(account_id,deviceName)
             self.pack_forget()
 
             # configuring window
