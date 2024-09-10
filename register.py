@@ -108,6 +108,19 @@ class RegisterWidgets(ctk.CTkFrame):
             self.statusLabel.configure(text="You must be at least 18 years old to register",text_color="#ff6633")
             return
 
+        if(self.usernameEntry.get()=='' or self.passwordEntry.get()=='' or self.firstnameEntry.get()=='' or self.lastnameEntry.get()==''\
+           or self.emailEntry.get()==''):
+            self.statusLabel.configure(text="Fill in all fields",text_color="#ff6633")
+            return
+
+        if (len(self.usernameEntry.get()) > 16 or len(self.usernameEntry.get())<5):
+            self.statusLabel.configure(text="5-16 letters login allowed",text_color="#ff6633")
+            return
+        
+        if (len(self.passwordEntry.get())<8):
+            self.statusLabel.configure(text="Your password should contain at least 8 characters",text_color="#ff6633")
+            return
+
         # while account number exists in database get new random account number
         accNum = random.randint(100000000000000000,999999999999999999)
         while IfAccNumExists(accNum):

@@ -112,6 +112,14 @@ class PersonalInfoWidgets(ctk.CTkFrame):
             self.statusLabel.configure(text="Incorrect password",text_color="#ff6633")
             self.passwordEntry.delete(0, ctk.END)
             return
+        
+        if (len(self.usernameEntry.get()) > 16 or len(self.usernameEntry.get())<5):
+            self.statusLabel.configure(text="5-16 letters login allowed",text_color="#ff6633")
+            return
+        
+        if (self.emailEntry.get()==''):
+            self.statusLabel.configure(text="Incorrect email",text_color="#ff6633")
+            return
 
         if(self.usernameEntry.get() == self.parent.account.Username and self.emailEntry.get() == email):
             self.statusLabel.configure(text="You have not changed anything",text_color="#ff6633")
