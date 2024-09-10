@@ -9,6 +9,9 @@ class SavingsDepositsWidgets(ctk.CTkFrame):
         super().__init__(master)
 
         self.parent = mainframe
+
+        self.master.bind('<Escape>',self.goBackHome)
+
         self.offerId = None
         self.myDeposit = None
         self.myDepositId = None
@@ -304,15 +307,20 @@ class SavingsDepositsWidgets(ctk.CTkFrame):
         self.mainFrame.pack(fill=ctk.BOTH, expand=True)
         self.pack(fill=ctk.BOTH, expand=True)
 
-    def goBackHome(self):
+    def goBackHome(self,event=None):
+        self.master.unbind('<Escape>')
         self.pack_forget()
         self.parent.master.createMainPanel(self.parent.account.Id)
 
     def showMyDeposits(self):
+        self.master.unbind('<Escape>')
+        self.master.bind('<Escape>',lambda event: self.goBack(self.myDeposits))
         self.mainFrame.pack_forget()
         self.myDeposits.pack(fill=ctk.BOTH, expand=True)
 
     def showDepositOffers(self):
+        self.master.unbind('<Escape>')
+        self.master.bind('<Escape>',lambda event: self.goBack(self.depositOffers))
         self.mainFrame.pack_forget()
         self.depositOffers.pack(fill=ctk.BOTH, expand=True)
 
@@ -320,6 +328,8 @@ class SavingsDepositsWidgets(ctk.CTkFrame):
     def selectOffer(self, newId):
         self.setId(newId)
         self.depositOffers.pack_forget()
+        self.master.unbind('<Escape>')
+        self.master.bind('<Escape>',self.goBackFromConfirmation)
 
         currencyTitleLabel= ctk.CTkLabel(self.offerInfo, text="Currency",font=("Arial",22))
         minmaxLabel= ctk.CTkLabel(self.offerInfo, text="Min-Max",font=("Arial",22))
@@ -363,6 +373,7 @@ class SavingsDepositsWidgets(ctk.CTkFrame):
         to = getSavingsDepositOffers()[tupleId][1]
         self.statusLabel.configure(text="")
         self.acceptOfferButton.grid_forget()
+        self.master.unbind('<Return>')
         if(self.amountEntry.get()==''):
             self.exchangeRate.configure(text='0.00 '+f'{to}')
         try:
@@ -376,6 +387,8 @@ class SavingsDepositsWidgets(ctk.CTkFrame):
                 self.acceptOfferButton.configure(command=lambda:self.acceptOffer(mysqlOfferId,float(self.amountEntry.get()),
                                                                           response.json()['rates'][f'{to}']))
                 self.acceptOfferButton.grid(row=4,column=0,columnspan=3,pady=10)
+                self.master.bind('<Return>',lambda event:self.acceptOffer(mysqlOfferId,float(self.amountEntry.get()),
+                                                                          response.json()['rates'][f'{to}']))
             elif(float(self.amountEntry.get())<getSavingsDepositOffers()[tupleId][2] or
                  float(self.amountEntry.get())>getSavingsDepositOffers()[tupleId][3]):
                 minAmount = getSavingsDepositOffers()[tupleId][2]
@@ -383,6 +396,7 @@ class SavingsDepositsWidgets(ctk.CTkFrame):
                 self.statusLabel.configure(text=f"min amount: {minAmount}, max amount: {maxAmount}")
                 self.exchangeRate.configure(text="")
                 self.acceptOfferButton.grid_forget()
+                self.master.unbind('<Return>')
             else:
                 self.statusLabel.configure(text="You do not have enough funds in your account")
         except requests.ConnectionError:
@@ -390,7 +404,7 @@ class SavingsDepositsWidgets(ctk.CTkFrame):
         except ValueError:
             if not self.amountEntry.get() == '':
                 self.statusLabel.configure(text="You have to enter a number")
-        self.updateProcessId = self.after(2000, self.update)
+        self.updateProcessId = self.after(1000, self.update)
 
     def updateExchangeLabel(self, amount, fromCurrency):
         host = 'api.frankfurter.app'
@@ -407,7 +421,10 @@ class SavingsDepositsWidgets(ctk.CTkFrame):
             self.statusLabel.configure(text="Connection error")
         self.updateExhangeProcessId = self.after(100000, lambda: self.updateExchangeLabel(amount,fromCurrency))
 
-    def goBackFromConfirmation(self):
+    def goBackFromConfirmation(self,event=None):
+        self.master.unbind('<Escape>')
+        self.master.unbind('<Return>')
+        self.master.bind('<Escape>',self.goBackHome)
         self.amountEntry.delete(0, ctk.END)
         self.exchangeRate.configure(text="")
         self.acceptOfferButton.grid_forget()
@@ -423,13 +440,17 @@ class SavingsDepositsWidgets(ctk.CTkFrame):
         self.after_cancel(self.updateProcessId)
 
 
-    def acceptOffer(self, offerId, amount, exchangedAmount):
+    def acceptOffer(self, offerId, amount, exchangedAmount, event=None):
+        self.master.unbind('<Escape>')
+        self.master.unbind('<Return>')
         acceptSavingDeposit(self.parent.account.Id, offerId, amount, exchangedAmount)
         self.after_cancel(self.updateProcessId)
         self.parent.account.Update()
         self.goBackHome()
 
-    def goBack(self, frame):
+    def goBack(self, frame,event=None):
+        self.master.unbind('<Escape>')
+        self.master.bind('<Escape>',self.goBackHome)
         frame.pack_forget()
         self.mainFrame.pack(fill=ctk.BOTH,expand=True)
 
@@ -437,6 +458,8 @@ class SavingsDepositsWidgets(ctk.CTkFrame):
         self.offerId = newId
 
     def resign(self, text, depositId, amount, fromCurrency):
+        self.master.unbind('<Escape>')
+        self.master.bind('<Escape>',self.goBackFromResign)
         self.myDeposit = text
         self.myDepositId = depositId
         self.myDepositLabel.configure(text=self.myDeposit)
@@ -445,7 +468,9 @@ class SavingsDepositsWidgets(ctk.CTkFrame):
         self.resignFrame.pack(fill=ctk.BOTH,expand=True)
 
     # stop updating process 
-    def goBackFromResign(self):
+    def goBackFromResign(self, event=None):
+        self.master.unbind('<Escape>')
+        self.master.bind('<Escape>',lambda event: self.goBack(self.myDeposits))
         self.after_cancel(self.updateExhangeProcessId)
         self.resignFrame.pack_forget()
         self.myDeposits.pack(fill=ctk.BOTH,expand=True)
@@ -454,6 +479,7 @@ class SavingsDepositsWidgets(ctk.CTkFrame):
     def confirmResignation(self, accountId, depositId):
         # get exchanged value and add it to balance in db, then refresh account 
         ResignDeposit(accountId, depositId, self.exchangedAmountPLN)
+        self.master.unbind('<Escape>')
         self.resignFrame.pack_forget()
         self.myDeposits.destroy()
         self.parent.account.Update()

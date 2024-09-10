@@ -10,6 +10,8 @@ class AccountWidgets(ctk.CTkFrame):
 
         self.parent = mainframe
 
+        self.master.bind('<Escape>',self.goBack)
+
         pathToArrow = "resources/arrowLeft.png"
         arrowImage = PhotoImage(file=pathToArrow)
 
@@ -58,15 +60,18 @@ class AccountWidgets(ctk.CTkFrame):
 
         self.pack(expand = True,fill=ctk.BOTH)
 
-    def goBack(self):
+    def goBack(self,event=None):
+        self.master.unbind('<Escape>')
         self.pack_forget()
         self.parent.master.createMainPanel(self.parent.account.Id)
 
     def showLoginRecords(self):
         login_history = getLoginRecords(self.parent.account.Id)
+        self.master.unbind('<Escape>')
         self.pack_forget()
         LoginRecordsFrame = LoginRecords(self.master, self.parent, login_history)
 
     def editInfo(self):
+        self.master.unbind('<Escape>')
         self.pack_forget()
         editInfoFrame = PersonalInfoWidgets(self.master, self.parent)

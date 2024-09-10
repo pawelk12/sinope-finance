@@ -6,6 +6,8 @@ class TransferHistoryWidgets(ctk.CTkFrame):
         super().__init__(master)
         self.parent = mainframe
 
+        self.master.bind('<Escape>',self.goBack)
+
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)
         pathToArrow = "resources/arrowLeft.png"
@@ -63,6 +65,7 @@ class TransferHistoryWidgets(ctk.CTkFrame):
         self.transferHistoryFrame.grid(row=2,column=0,columnspan=2)
         self.pack(expand = True,fill=ctk.BOTH)
 
-    def goBack(self):
+    def goBack(self,event=None):
+        self.master.unbind('<Escape>')
         self.pack_forget()
         self.parent.master.createMainPanel(self.parent.account.Id)

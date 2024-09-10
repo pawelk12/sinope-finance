@@ -8,6 +8,9 @@ class TransferWidgets(ctk.CTkFrame):
 
         self.parent = mainframe
 
+        self.master.bind('<Return>',self.Transfer)
+        self.master.bind('<Escape>',self.goBack)
+
         pathToArrow = "resources/arrowLeft.png"
         arrowImage = PhotoImage(file=pathToArrow)
 
@@ -75,7 +78,7 @@ class TransferWidgets(ctk.CTkFrame):
 
         self.pack(fill=ctk.BOTH, expand = True)
 
-    def Transfer(self):
+    def Transfer(self,event=None):
 
         # if user entered his own account number
         if(self.accountNumberEntry.get() == str(self.parent.account.BankAccNum)):
@@ -108,6 +111,8 @@ class TransferWidgets(ctk.CTkFrame):
         except ValueError:
             self.statusLabel.configure(text="Please enter a valid value", text_color="#ff6633")
 
-    def goBack(self):
+    def goBack(self,event=None):
+        self.master.unbind('<Return>')
+        self.master.unbind('<Escape>')
         self.pack_forget()
         self.parent.master.createMainPanel(self.parent.account.Id)

@@ -19,6 +19,7 @@ class RegisterWidgets(ctk.CTkFrame):
         self._border_width = 3
         self._border_color = "#3d9bd7"
         self._corner_radius = 32
+        self.master.bind('<Return>',self.Register)
 
         titleLabel = ctk.CTkLabel(self,text="Please enter your personal details",font=("Arial",20))
         titleLabel.grid(row=0,column=0,columnspan=2,padx=20,pady=10)
@@ -91,7 +92,7 @@ class RegisterWidgets(ctk.CTkFrame):
 
         self.pack(expand = True)
         
-    def Register(self):
+    def Register(self,event=None):
 
         # checking if user entered date in correct format
         try:
@@ -126,6 +127,7 @@ class RegisterWidgets(ctk.CTkFrame):
                       )
             
             self.statusLabel.configure(text="Registered successfully",text_color="#009900")
+            self.master.unbind('<Return>')
             self.pack_forget()
             self.master.createLoginPanel()
 
@@ -136,5 +138,6 @@ class RegisterWidgets(ctk.CTkFrame):
             self.usernameEntry.delete(0, ctk.END)
         
     def SwitchToLogin(self):
+        self.master.unbind('<Return>')
         self.pack_forget()
         self.master.createLoginPanel()

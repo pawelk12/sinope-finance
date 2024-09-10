@@ -12,6 +12,7 @@ class LoginWidgets(ctk.CTkFrame):
         self._border_width = 3
         self._border_color = "#3d9bd7"
         self._corner_radius = 32
+        self.master.bind('<Return>', self.Login)
 
         titleLabel = ctk.CTkLabel(self, text="Login to your bank account",font=("Arial",20))
         titleLabel.grid(row=0,column=2,columnspan=2,padx=20,pady=10)
@@ -53,8 +54,8 @@ class LoginWidgets(ctk.CTkFrame):
         self.pack(expand = True)
 
 
-    def Login(self):
-        
+    def Login(self, event=None):
+
         account_id = ReadFromDB(self.usernameEntry.get(), hashlib.sha256(self.passwordEntry.get().encode()).hexdigest())
         if(account_id):
             self.statusLabel.configure(text="Logged successfully",text_color="#009900")
@@ -62,16 +63,18 @@ class LoginWidgets(ctk.CTkFrame):
             deviceName = str(system.node)
             addLoginRecord(account_id,deviceName)
             self.pack_forget()
-
+            self.master.unbind('<Return>')
             # configuring window
             self.master.createMainPanel(ReadFromDB(self.usernameEntry.get(), hashlib.sha256(self.passwordEntry.get().encode()).hexdigest()))
             self.master.resizeAndCenter(1200,750)
             self.master.resizable(True, True)
             self.master.minsize(600,400)
+            self.master.configure(bg="#2b2b2b")
 
         else:
             self.statusLabel.configure(text="Failed to log in",text_color="#ff6633")
 
     def SwitchToRegister(self):
+        self.master.unbind('<Return>')
         self.pack_forget()
         self.master.createRegisterPanel()

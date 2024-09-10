@@ -7,6 +7,8 @@ class LoginRecords(ctk.CTkFrame):
         
         self.parent = mainframe
 
+        self.master.bind('<Escape>',self.goBack)
+
         pathToArrow = "resources/arrowLeft.png"
         arrowImage = PhotoImage(file=pathToArrow)
 
@@ -44,12 +46,13 @@ class LoginRecords(ctk.CTkFrame):
             deviceLabel = ctk.CTkLabel(self.loginHistoryFrame,text=record[1],padx=20,font=("Arial",18))
             deviceLabel.grid(row=i+1,column=1,sticky="w")
             i = i + 1
-            if i > 199:
+            if i > 49:
                 break
 
         self.loginHistoryFrame.grid(row=2,column=0,columnspan=2)
         self.pack(expand = True,fill=ctk.BOTH) 
 
-    def goBack(self):
+    def goBack(self,event=None):
+        self.master.unbind('<Escape>')
         self.pack_forget()
         self.parent.accountWidgets()

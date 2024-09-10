@@ -11,6 +11,9 @@ class PersonalInfoWidgets(ctk.CTkFrame):
         
         self.parent = mainframe
 
+        self.master.bind('<Return>',self.SaveChanges)
+        self.master.bind('<Escape>',self.goBack)
+
         pathToArrow = "resources/arrowLeft.png"
         arrowImage = PhotoImage(file=pathToArrow)
 
@@ -100,7 +103,7 @@ class PersonalInfoWidgets(ctk.CTkFrame):
         self.pack(expand = True,fill=ctk.BOTH)
 
 
-    def SaveChanges(self):
+    def SaveChanges(self,event=None):
         hashed_passwd = hashlib.sha256(self.passwordEntry.get().encode()).hexdigest()
         username = self.parent.account.Username
         email = self.parent.account.Email
@@ -152,6 +155,8 @@ class PersonalInfoWidgets(ctk.CTkFrame):
             self.passwordEntry.delete(0, ctk.END)
 
 
-    def goBack(self):
+    def goBack(self,event=None):
+        self.master.unbind('<Return>')
+        self.master.unbind('<Escape>')
         self.pack_forget()
         self.parent.accountWidgets()
