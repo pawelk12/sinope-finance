@@ -384,11 +384,15 @@ class SavingsDepositsWidgets(ctk.CTkFrame):
                 response = requests.get(f'https://{host}/latest?amount={float(self.amountEntry.get())}&from=PLN&to={to}')
                 self.exchangeRate.configure(text=str(float(response.json()['rates'][f'{to}'])) + " " + f'{to}')
                 mysqlOfferId=self.offerId
+
+                minAmount = getSavingsDepositOffers()[tupleId][2]
+                maxAmount = getSavingsDepositOffers()[tupleId][3]
+                #send entry, to, min, max and convert inside acceptOffer class second time
                 self.acceptOfferButton.configure(command=lambda:self.acceptOffer(mysqlOfferId,float(self.amountEntry.get()),
-                                                                          response.json()['rates'][f'{to}']))
+                                                                                 minAmount,maxAmount,to))
                 self.acceptOfferButton.grid(row=4,column=0,columnspan=3,pady=10)
                 self.master.bind('<Return>',lambda event:self.acceptOffer(mysqlOfferId,float(self.amountEntry.get()),
-                                                                          response.json()['rates'][f'{to}']))
+                                                                          minAmount,maxAmount,to))
             elif(float(self.amountEntry.get())<getSavingsDepositOffers()[tupleId][2] or
                  float(self.amountEntry.get())>getSavingsDepositOffers()[tupleId][3]):
                 minAmount = getSavingsDepositOffers()[tupleId][2]
@@ -440,13 +444,23 @@ class SavingsDepositsWidgets(ctk.CTkFrame):
         self.after_cancel(self.updateProcessId)
 
 
-    def acceptOffer(self, offerId, amount, exchangedAmount, event=None):
-        self.master.unbind('<Escape>')
-        self.master.unbind('<Return>')
-        acceptSavingDeposit(self.parent.account.Id, offerId, amount, exchangedAmount)
-        self.after_cancel(self.updateProcessId)
-        self.parent.account.Update()
-        self.goBackHome()
+    def acceptOffer(self,offerId,amount,minAmount,maxAmount,to, event=None):
+
+        if(amount >= minAmount and amount <=maxAmount):
+            try:
+                host = 'api.frankfurter.app'
+                response = requests.get(f'https://{host}/latest?amount={float(self.amountEntry.get())}&from=PLN&to={to}')
+                exchangedAmount = float(response.json()['rates'][f'{to}'])
+                self.master.unbind('<Escape>')
+                self.master.unbind('<Return>')
+                acceptSavingDeposit(self.parent.account.Id, offerId, amount, exchangedAmount)
+                self.after_cancel(self.updateProcessId)
+                self.parent.account.Update()
+                self.goBackHome()
+            except requests.ConnectionError:
+                self.statusLabel.configure(text="Connection error")
+        else:
+            pass
 
     def goBack(self, frame,event=None):
         self.master.unbind('<Escape>')
